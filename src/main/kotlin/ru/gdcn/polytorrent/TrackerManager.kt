@@ -4,6 +4,7 @@ import com.dampcake.bencode.Bencode
 import com.dampcake.bencode.Type
 import khttp.*
 import khttp.responses.Response
+import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -11,10 +12,10 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
     private val trackerList: MutableList<String> = mutableListOf()
 
     init {
-//        trackerList.add(metafile.announce)
-//        trackerList.addAll(metafile.announceList)
+        trackerList.add(metafile.announce)
+        trackerList.addAll(metafile.announceList)
 //        trackerList.shuffle()
-        trackerList.add("http://tracker.dler.org:6969/announce")
+//        trackerList.add("http://tracker.dler.org:6969/announce")
     }
 
     fun getAnnounceInfo(): AnnounceInfo {
@@ -53,7 +54,7 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
 
     private fun askTracker(urlString: String): Response? {
         val parameters = mutableMapOf<String, String>()
-        parameters["info_hash"] = metafile.info.md5sum
+        parameters["info_hash"] = Utils.byteArrayToString(metafile.infoSha1)
         parameters["peer_id"] = Utils.byteArrayToString(peerId)
         parameters["port"] = Utils.PORT
         parameters["uploaded"] = "0"
@@ -67,9 +68,12 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
             response
         } catch (e: SocketTimeoutException) {
             println("Трекер не ответил")
-            null
+            null //TODO OPTIONAL
         } catch (e: UnknownHostException) {
             println("Не удалось узнать адрес хоста")
+            null
+        } catch (e: ConnectException) {
+            println("Ошибка подключения")
             null
         }
     }

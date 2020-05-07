@@ -2,6 +2,7 @@ package ru.gdcn.polytorrent
 
 import com.dampcake.bencode.Bencode
 import com.dampcake.bencode.Type
+import ru.gdcn.polytorrent.tracker.FileData
 import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest
@@ -51,6 +52,14 @@ class Metafile(val metafile: File) {
 
     class Metainfo(map: Map<String, Any>) {
         private var dictionary: Map<String, Any> = map
+
+        val isSingleFile: Boolean
+            get() = true
+
+        val fileDatas: List<FileData>
+            get() {
+                return listOf(FileData(length, listOf(name)))
+            }
 
         val length: Long
             get() = dictionary["length"].toString().toLong()
