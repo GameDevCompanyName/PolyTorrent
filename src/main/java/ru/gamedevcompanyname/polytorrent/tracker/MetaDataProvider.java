@@ -1,6 +1,5 @@
 package ru.gamedevcompanyname.polytorrent.tracker;
 
-import java.io.File;
 import java.io.InputStream;
 
 public class MetaDataProvider {
@@ -10,7 +9,7 @@ public class MetaDataProvider {
     }
 
     public MetaData provide(InputStream in) {
-        return new MetaData();
+        return null;
     }
 
 }
