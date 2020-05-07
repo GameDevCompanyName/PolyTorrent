@@ -1,4 +1,4 @@
-package ru.gamedevcompanyname.polytorrent.tracker;/*
+package ru.gdcn.polytorrent.tracker;/*
  * BitTorrent bencode encoder/decoder (Java)
  *
  * Copyright (c) 2020 Project Nayuki. (MIT License)

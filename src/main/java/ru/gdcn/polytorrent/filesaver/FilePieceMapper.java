@@ -1,4 +1,4 @@
-package ru.gamedevcompanyname.polytorrent.filesaver;
+package ru.gdcn.polytorrent.filesaver;
 
 import java.io.RandomAccessFile;
 

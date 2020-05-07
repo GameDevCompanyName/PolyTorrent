@@ -1,4 +1,4 @@
-package ru.gamedevcompanyname.polytorrent.tracker;
+package ru.gdcn.polytorrent.tracker;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package ru.gamedevcompanyname.polytorrent.filesaver;
+package ru.gdcn.polytorrent.filesaver;
 
-import ru.gamedevcompanyname.polytorrent.tracker.FileData;
-import ru.gamedevcompanyname.polytorrent.tracker.MetaData;
+import ru.gdcn.polytorrent.tracker.FileData;
+import ru.gdcn.polytorrent.tracker.MetaData;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +90,7 @@ public class FileSaver {
     }
 
     private void createPiecesList() {
-        // составляем список Piece'ов
+        // составляем список ru.gdcn.polytorrent.Piece'ов
         long pieceNumber = 0L;
 
         for (byte[] sha1 : metaData.getPieces()) {
@@ -125,7 +125,7 @@ public class FileSaver {
             long pieceFreeBytes = piece.getLength() - pieceOffset;
             long fileMissingBytes = file.length() - fileOffset;
 
-            // если Piece часть одного файла - обновляем оффсет файла, берем новый Piece
+            // если ru.gdcn.polytorrent.Piece часть одного файла - обновляем оффсет файла, берем новый ru.gdcn.polytorrent.Piece
             if (pieceFreeBytes < fileMissingBytes) {
                 fileOffset += pieceFreeBytes;
                 if (pieceIterator.hasNext()) {
@@ -134,7 +134,7 @@ public class FileSaver {
                     piece = null;
                 }
                 pieceOffset = 0L;
-                // если Piece часть двух файлов - обновляем оффсет Piece, берем новый файл
+                // если ru.gdcn.polytorrent.Piece часть двух файлов - обновляем оффсет ru.gdcn.polytorrent.Piece, берем новый файл
             } else if (pieceFreeBytes > fileMissingBytes) {
                 pieceOffset += fileMissingBytes;
                 if (fileIterator.hasNext()) {
@@ -143,7 +143,7 @@ public class FileSaver {
                     file = null;
                 }
                 fileOffset = 0L;
-                // если Piece ровно ложится на конец файла, берем новый Piece и файл, обнуляем оффсеты
+                // если ru.gdcn.polytorrent.Piece ровно ложится на конец файла, берем новый ru.gdcn.polytorrent.Piece и файл, обнуляем оффсеты
             } else {
                 fileOffset = 0L;
                 pieceOffset = 0L;
