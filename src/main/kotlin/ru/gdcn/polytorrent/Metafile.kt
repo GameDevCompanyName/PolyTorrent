@@ -64,7 +64,7 @@ class Metafile(val metafile: File) {
         val pieceLength: Int
             get() = dictionary["piece length"].toString().toInt()
 
-        val pieces: List<Piece>
+        val pieceHashes: List<PieceHash>
             get() {
                 val byteParts = (dictionary["pieces"] as String).toByteArray(Charsets.US_ASCII).toList()
                 if (byteParts.size % 20 != 0)
@@ -72,16 +72,16 @@ class Metafile(val metafile: File) {
                 if (byteParts.isEmpty())
                     throw IllegalArgumentException("Pieces should not be empty")
 
-                val list = mutableListOf<Piece>()
+                val list = mutableListOf<PieceHash>()
                 for (i in 0 until (byteParts.size / 20)) {
                     val currentParts = byteParts.subList(20 * i, 20 * (i + 1))
-                    list.add(Piece(currentParts))
+                    list.add(PieceHash(currentParts))
                 }
                 return list
             }
 
         override fun toString(): String {
-            return "{$length,$md5sum,$name,$pieceLength,${pieces.joinToString()}}"
+            return "{$length,$md5sum,$name,$pieceLength,${pieceHashes.joinToString()}}"
         }
     }
 
