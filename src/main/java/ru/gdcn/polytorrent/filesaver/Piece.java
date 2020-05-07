@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Piece {
-    private final byte[] sha1;
+    private final Byte[] sha1;
     private long length;
     private final List<FilePieceMapper> filePointers;
 
-    public Piece(byte[] sha1) {
+    public Piece(Byte[] sha1) {
         this.sha1 = sha1;
         this.filePointers = new ArrayList<>();
     };
