@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import ru.gdcn.polytorrent.Metafile;
 import ru.gdcn.polytorrent.PieceHash;
 import ru.gdcn.polytorrent.tracker.FileData;
-import ru.gdcn.polytorrent.tracker.Torrent;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +36,17 @@ public class FileSaver {
             fileSaver = new FileSaver();
         }
         return fileSaver;
+    }
+
+    public synchronized void savePiece(int index, int begin, byte[] block) {
+        Piece piece = pieces.get(index);
+        if (!piece.isCompleted()) {
+            try {
+                piece.write(begin, block);
+            } catch (IOException e) {
+                logger.error("Ошибка при записи piece: " + index, e);
+            }
+        }
     }
 
     public synchronized boolean init() throws IOException {
