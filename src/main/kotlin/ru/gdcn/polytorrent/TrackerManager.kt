@@ -7,15 +7,16 @@ import khttp.responses.Response
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import kotlin.streams.toList
 
 class TrackerManager(private val metafile: Metafile, private val peerId: ByteArray) {
     private val trackerList: MutableList<String> = mutableListOf()
 
     init {
-        trackerList.add(metafile.announce)
-        trackerList.addAll(metafile.announceList)
+//        trackerList.add(metafile.announce)
+//        trackerList.addAll(metafile.announceList)
 //        trackerList.shuffle()
-//        trackerList.add("http://tracker.dler.org:6969/announce")
+        trackerList.add("http://tracker.dler.org:6969/announce")
     }
 
     fun getAnnounceInfo(): AnnounceInfo {
@@ -54,17 +55,23 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
 
     private fun askTracker(urlString: String): Response? {
         val parameters = mutableMapOf<String, String>()
-        parameters["info_hash"] = Utils.byteArrayToString(metafile.infoSha1)
-        parameters["peer_id"] = Utils.byteArrayToString(peerId)
+        parameters["info_hash"] = Utilities.byteArrayToURLString(metafile.infoSha1)
+        parameters["peer_id"] = Utilities.byteArrayToURLString(peerId)
         parameters["port"] = Utils.PORT
         parameters["uploaded"] = "0"
         parameters["downloaded"] = "0"
         parameters["left"] = metafile.info.length.toString()
+        parameters["compact"] = "1"
+
+        val encodedUrl = urlString + "?" + parameters.entries.stream()
+            .map { it.key + "=" + it.value }
+            .toList()
+            .joinToString("&")
 
         println(parameters.entries.joinToString())
 
         return try {
-            val response = get(urlString, parameters, timeout = Utils.TRACKER_TIMEOUT)
+            val response = get(encodedUrl, timeout = Utils.TRACKER_TIMEOUT)
             response
         } catch (e: SocketTimeoutException) {
             println("Трекер не ответил")
