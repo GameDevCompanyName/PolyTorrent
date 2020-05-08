@@ -1,5 +1,7 @@
 package ru.gdcn.polytorrent.filesaver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.gdcn.polytorrent.Metafile;
 import ru.gdcn.polytorrent.PieceHash;
 import ru.gdcn.polytorrent.tracker.FileData;
@@ -13,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class FileSaver {
+    private static final Logger logger = LoggerFactory.getLogger(FileSaver.class);
 
     Metafile.Metainfo metafile;
     private final List<Piece> pieces = new ArrayList<>();
@@ -33,6 +36,17 @@ public class FileSaver {
             fileSaver = new FileSaver();
         }
         return fileSaver;
+    }
+
+    public synchronized void savePiece(int index, int begin, byte[] block) {
+        Piece piece = pieces.get(index);
+        if (!piece.isCompleted()) {
+            try {
+                piece.write(begin, block);
+            } catch (IOException e) {
+                logger.error("Ошибка при записи piece: " + index, e);
+            }
+        }
     }
 
     public synchronized boolean init() throws IOException {
@@ -56,7 +70,8 @@ public class FileSaver {
             if (!saveDirectory.getName().equals(metafile.getName())) {
                 saveDirectory = new File(saveDirectory, metafile.getName());
                 if (!saveDirectory.mkdir()) {
-                    throw new RuntimeException("Не удалось создать директорию");
+                    logger.error("Не удалось создать директорию");
+                    throw new RuntimeException();
                 }
             }
 
@@ -69,7 +84,8 @@ public class FileSaver {
                     pathName.append("/").append(pathPart);
                     if (i == path.size() - 1) {
                         if (!new File(saveDirectory, pathName.toString()).mkdir()) {
-                            throw new RuntimeException("Не удалось создать директорию");
+                            logger.error("Не удалось создать директорию");
+                            throw new RuntimeException();
                         }
                     }
                 }
@@ -145,6 +161,7 @@ public class FileSaver {
                     file = null;
                 }
                 fileOffset = 0L;
+                logger.info("Найден piece который содержит куски разных файлов");
                 // если ru.gdcn.polytorrent.Piece ровно ложится на конец файла, берем новый ru.gdcn.polytorrent.Piece и файл, обнуляем оффсеты
             } else {
                 fileOffset = 0L;
