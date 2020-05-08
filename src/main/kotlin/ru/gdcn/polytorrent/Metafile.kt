@@ -36,7 +36,7 @@ class Metafile(val metafile: File) {
     val info: Metainfo
         get() = Metainfo(dictionary["info"] as Map<String, Any>)
 
-    val infoSha1: ByteArray
+    val infoHash: ByteArray
         get() {
             val inputStream = FileInputStream(metafile)
             val fileBytes = inputStream.readAllBytes()

@@ -13,10 +13,12 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
     private val trackerList: MutableList<String> = mutableListOf()
 
     init {
-//        trackerList.add(metafile.announce)
-//        trackerList.addAll(metafile.announceList)
+        trackerList.add(metafile.announce)
+        trackerList.addAll(metafile.announceList)
 //        trackerList.shuffle()
-        trackerList.add("http://tracker.dler.org:6969/announce")
+        // Строчку ниже можно раскомментировать и оставить вместо первых двух, чтобы
+        //сразу обращаться к этому трекеру. Он вроде отвечает на запросы.
+//        trackerList.add("http://tracker.dler.org:6969/announce")
     }
 
     fun getAnnounceInfo(): AnnounceInfo {
@@ -35,7 +37,7 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
                 continue
             }
             println(response.text)
-            val responseDictionary = Bencode().decode(response.text.toByteArray(), Type.DICTIONARY)
+            val responseDictionary = Bencode().decode(response.text.toByteArray(Charsets.US_ASCII), Type.DICTIONARY)
             if (responseDictionary.containsKey("failure reason")) {
                 println("Ошибка от сервера $urlString: ${responseDictionary["failure reason"].toString()}")
                 trackerList.remove(urlString)
@@ -43,7 +45,8 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
             }
             if (responseDictionary.containsKey("peers")) {
                 println("Получили данные о пирах от $urlString")
-                announceInfo = AnnounceInfo()
+                return AnnounceInfo(responseDictionary)
+                //TODO OPTIONAL
                 break
             }
         }
@@ -55,7 +58,7 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
 
     private fun askTracker(urlString: String): Response? {
         val parameters = mutableMapOf<String, String>()
-        parameters["info_hash"] = Utilities.byteArrayToURLString(metafile.infoSha1)
+        parameters["info_hash"] = Utilities.byteArrayToURLString(metafile.infoHash)
         parameters["peer_id"] = Utilities.byteArrayToURLString(peerId)
         parameters["port"] = Utils.PORT
         parameters["uploaded"] = "0"
