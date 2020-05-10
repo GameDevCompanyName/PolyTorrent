@@ -4,6 +4,7 @@ import com.dampcake.bencode.Bencode
 import com.dampcake.bencode.Type
 import khttp.*
 import khttp.responses.Response
+import ru.gdcn.polytorrent.Utilities.byteArrayToURLString
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -59,8 +60,8 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
 
     private fun askTracker(urlString: String): Response? {
         val parameters = mutableMapOf<String, String>()
-        parameters["info_hash"] = Utilities.byteArrayToURLString(metafile.infoHash)
-        parameters["peer_id"] = Utilities.byteArrayToURLString(peerId)
+        parameters["info_hash"] = byteArrayToURLString(metafile.infoHash)
+        parameters["peer_id"] = byteArrayToURLString(peerId)
         parameters["port"] = Utils.PORT
         parameters["uploaded"] = "0"
         parameters["downloaded"] = "0"

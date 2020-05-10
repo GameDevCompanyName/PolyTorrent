@@ -1,5 +1,6 @@
 package ru.gdcn.polytorrent
 
+import ru.gdcn.polytorrent.pwp.Peer
 import java.net.InetAddress
 
 class AnnounceInfo(val dictionary: Map<String, Any>) {
@@ -27,15 +28,15 @@ class AnnounceInfo(val dictionary: Map<String, Any>) {
     val incomplete: Int
         get() = dictionary["incomplete"].toString().toInt()
 
-    val peers: List<PeerInfo>
+    val peers: List<Peer>
         get() {
             try {
                 val peerDictionaryList = dictionary["peers"] as List<Map<String, Any>>
                 return peerDictionaryList.map {
-                    PeerInfo(
-                        it["peer id"].toString(),
-                        it["ip"].toString(),
-                        it["port"].toString().toInt()
+                    Peer(
+                        InetAddress.getByName(it["ip"].toString()),
+                        it["port"].toString().toInt(),
+                        it["peer id"].toString().toByteArray(Charsets.US_ASCII).toTypedArray()
                     )
                 }
             } catch (e: Exception) {
@@ -44,7 +45,7 @@ class AnnounceInfo(val dictionary: Map<String, Any>) {
                     throw IllegalStateException("Если пиры в бинарной форме, количество байт должно быть кратно 6")
                 }
 
-                val peerList = mutableListOf<PeerInfo>()
+                val peerList = mutableListOf<Peer>()
 
                 for (i in 0 until peerBytes.size / 6) {
                     val currentBytes = peerBytes.copyOfRange(i * 6, (i + 1) * 6)
@@ -54,10 +55,14 @@ class AnnounceInfo(val dictionary: Map<String, Any>) {
                     println(ipBytes[1])
                     println(ipBytes[2])
                     println(ipBytes[3])
-                    val ip = InetAddress.getByAddress(ipBytes).hostAddress
+                    val ip = InetAddress.getByAddress(ipBytes)
                     val port = Utilities.getIntFromTwoBytes(portBytes[0], portBytes[1])
                     peerList.add(
-                        PeerInfo(Utils.UNKNOWN_PEER_ID, ip, port)
+                        Peer(
+                            ip,
+                            port,
+                            Utils.UNKNOWN_PEER_ID.toByteArray(Charsets.US_ASCII).toTypedArray()
+                        )
                     )
                 }
 
