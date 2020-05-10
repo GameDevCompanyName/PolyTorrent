@@ -60,7 +60,7 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
 
     private fun askTracker(urlString: String): Response? {
         val parameters = mutableMapOf<String, String>()
-        parameters["info_hash"] = byteArrayToURLString(metafile.infoHash)
+        parameters["info_hash"] = byteArrayToURLString(metafile.infoHash.toByteArray())
         parameters["peer_id"] = byteArrayToURLString(peerId)
         parameters["port"] = Utils.PORT
         parameters["uploaded"] = "0"

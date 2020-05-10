@@ -36,14 +36,14 @@ class Metafile(val metafile: File) {
     val info: Metainfo
         get() = Metainfo(dictionary["info"] as Map<String, Any>)
 
-    val infoHash: ByteArray
+    val infoHash: Array<Byte>
         get() {
             val inputStream = FileInputStream(metafile)
             val fileBytes = inputStream.readAllBytes()
             val firstIndex = String(fileBytes).indexOf("4:infod6:") + 6
             val subBytes = fileBytes.copyOfRange(firstIndex, fileBytes.size - 1)
             val hasher = MessageDigest.getInstance("SHA-1")
-            return hasher.digest(subBytes)
+            return hasher.digest(subBytes).toTypedArray()
         }
 
     override fun toString(): String {
