@@ -13,12 +13,12 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
     private val trackerList: MutableList<String> = mutableListOf()
 
     init {
-        trackerList.add(metafile.announce)
-        trackerList.addAll(metafile.announceList)
-//        trackerList.shuffle()
-        // Строчку ниже можно раскомментировать и оставить вместо первых двух, чтобы
-        //сразу обращаться к этому трекеру. Он вроде отвечает на запросы.
-//        trackerList.add("http://tracker.dler.org:6969/announce")
+        if (metafile.announceList.isEmpty()){
+            trackerList.add(metafile.announce)
+        } else {
+            trackerList.addAll(metafile.announceList)
+            trackerList.shuffle()
+        }
     }
 
     fun getAnnounceInfo(): AnnounceInfo {
@@ -37,7 +37,8 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
                 continue
             }
             println(response.text)
-            val responseDictionary = Bencode().decode(response.text.toByteArray(Charsets.US_ASCII), Type.DICTIONARY)
+
+            val responseDictionary = Bencode().decode(response.content, Type.DICTIONARY)
             if (responseDictionary.containsKey("failure reason")) {
                 println("Ошибка от сервера $urlString: ${responseDictionary["failure reason"].toString()}")
                 trackerList.remove(urlString)
@@ -64,7 +65,7 @@ class TrackerManager(private val metafile: Metafile, private val peerId: ByteArr
         parameters["uploaded"] = "0"
         parameters["downloaded"] = "0"
         parameters["left"] = metafile.info.length.toString()
-        parameters["compact"] = "1"
+//        parameters["compact"] = "1"
 
         val encodedUrl = urlString + "?" + parameters.entries.stream()
             .map { it.key + "=" + it.value }

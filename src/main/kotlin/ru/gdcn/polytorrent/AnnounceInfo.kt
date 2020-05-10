@@ -1,9 +1,6 @@
 package ru.gdcn.polytorrent
 
-import com.dampcake.bencode.Bencode
-import com.dampcake.bencode.BencodeException
-import com.dampcake.bencode.Type
-import java.net.Inet4Address
+import java.net.InetAddress
 
 class AnnounceInfo(val dictionary: Map<String, Any>) {
 
@@ -53,7 +50,11 @@ class AnnounceInfo(val dictionary: Map<String, Any>) {
                     val currentBytes = peerBytes.copyOfRange(i * 6, (i + 1) * 6)
                     val ipBytes = currentBytes.copyOfRange(0, 4)
                     val portBytes = currentBytes.copyOfRange(4, 6)
-                    val ip = Inet4Address.getByAddress(ipBytes).hostAddress
+                    println(ipBytes[0])
+                    println(ipBytes[1])
+                    println(ipBytes[2])
+                    println(ipBytes[3])
+                    val ip = InetAddress.getByAddress(ipBytes).hostAddress
                     val port = Utilities.getIntFromTwoBytes(portBytes[0], portBytes[1])
                     peerList.add(
                         PeerInfo(Utils.UNKNOWN_PEER_ID, ip, port)

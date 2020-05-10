@@ -1,8 +1,10 @@
 package ru.gdcn.polytorrent
 
+import java.net.InetAddress
+
 data class PeerInfo(
     val peerId: String,
-    val ip: String,
+    val ip: InetAddress,
     val port: Int
 ) {
 
