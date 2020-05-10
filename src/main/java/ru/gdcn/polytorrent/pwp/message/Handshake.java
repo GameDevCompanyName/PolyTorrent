@@ -12,6 +12,7 @@ public class Handshake implements Message{
     private static final int PSTRLEN = 19;
     private static final String PSTR = "BitTorrent protocol";
     private static final byte[] RESERVED = {0, 0, 0, 0, 0, 0, 0, 0};
+    private MessageId messageId;
     private Byte[] infoHash;
     private Byte[] ourPeerId;
 
