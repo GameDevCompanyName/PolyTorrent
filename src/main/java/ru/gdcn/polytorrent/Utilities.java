@@ -1,5 +1,7 @@
 package ru.gdcn.polytorrent;
 
+import java.util.List;
+
 public class Utilities {
 
     public static String byteArrayToURLString(byte in[]) {
@@ -41,11 +43,11 @@ public class Utilities {
                 byteToUnsignedInt(byte2);
     }
 
-    public static int getIntFromFourBytes(byte byte1, byte byte2, byte byte3, byte byte4) {
-        return (byteToUnsignedInt(byte1) << 24) +
-                (byteToUnsignedInt(byte2) << 16) +
-                (byteToUnsignedInt(byte3) << 8) +
-                byteToUnsignedInt(byte4);
+    public static int getIntFromFourBytes(byte[] bytes) {
+        return (byteToUnsignedInt(bytes[0]) << 24) +
+                (byteToUnsignedInt(bytes[1]) << 16) +
+                (byteToUnsignedInt(bytes[2]) << 8) +
+                byteToUnsignedInt(bytes[3]);
     }
 
     public static Byte[] getTwoBytesFromInt(int a) {
@@ -69,4 +71,25 @@ public class Utilities {
         else return b;
     }
 
+    public static byte[] byteListToPrimitive(List<Byte> byteList) {
+        byte[] byteArray = new byte[byteList.size()];
+        for (int i = 0; i < byteArray.length; i++) {
+            byteArray[i] = byteList.get(i);
+        }
+        return byteArray;
+    }
+
+    public static Byte[] byteArrayToObject(byte[] bytes) {
+        Byte[] bytesObj = new Byte[bytes.length];
+        int i = 0;
+        for (byte b : bytes) bytesObj[i++] = b;
+        return bytesObj;
+    }
+
+    public static byte[] byteArrayToPrimitive(Byte[] bytesObj) {
+        byte[] bytes = new byte[bytesObj.length];
+        int i = 0;
+        for (Byte b : bytesObj) bytes[i++] = b;
+        return bytes;
+    }
 }
