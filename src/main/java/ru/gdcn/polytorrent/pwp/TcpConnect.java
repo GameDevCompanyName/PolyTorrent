@@ -5,17 +5,16 @@ import java.net.Socket;
 
 public class TcpConnect {
     private Socket socket;
-    private BufferedReader in;
-    private BufferedWriter out;
+    private Peer peer;
+
+    public TcpConnect() {
+
+    }
 
     public void run() throws IOException {
         try {
-            socket = new Socket();
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            String input = in.readLine();
-            out.write("output");
-            out.flush();
+            socket = new Socket(peer.getIp(), peer.getPort());
+            new PeerSession(peer, socket);
         } finally {
             socket.close();
         }

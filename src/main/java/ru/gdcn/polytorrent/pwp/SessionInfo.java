@@ -6,8 +6,10 @@ import java.util.Set;
 
 @Data
 public class SessionInfo {
-    private Set<Peer> peers;
-    private Byte[] infoHash;
-    private Set<Long> receivedPieces;
-    private Set<Long> requestedPieces;
+    public static final int NUM_OF_PEERS = 5;
+    public static Set<Peer> peers;
+    public static Byte[] infoHash;
+    public static Byte[] ourPeerId;
+    public static Set<Long> receivedPieces;
+    public static Set<Long> requestedPieces;
 }
