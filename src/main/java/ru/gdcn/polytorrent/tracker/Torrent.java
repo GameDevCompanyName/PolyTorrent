@@ -31,7 +31,7 @@ public class Torrent {
         AnnounceInfo announceInfo = manager.getAnnounceInfo();
         System.out.println(announceInfo.getPeers().size());
 
-        FileSaver fileSaver = FileSaver.getInstance(metafile, savedirectory);
+        FileSaver fileSaver = new FileSaver(metafile, savedirectory);
         try {
             fileSaver.init();
         } catch (IOException e) {

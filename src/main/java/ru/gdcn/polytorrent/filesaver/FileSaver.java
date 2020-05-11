@@ -29,14 +29,6 @@ public class FileSaver {
         this.saveDirectory = saveDirectory;
     }
 
-    private FileSaver() {}
-
-    public static FileSaver getInstance(Metafile metafile, File saveDirectory) {
-        if (fileSaver == null) {
-            fileSaver = new FileSaver(metafile, saveDirectory);
-        }
-        return fileSaver;
-    }
 
     public synchronized void savePiece(int index, int begin, byte[] block) {
         Piece piece = pieces.get(index);
