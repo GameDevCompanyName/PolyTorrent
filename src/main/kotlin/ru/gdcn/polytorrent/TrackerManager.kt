@@ -47,6 +47,9 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
             future.get()
         }
 
+        //Вырубаем работяг
+        executorService.shutdown()
+
 //        val dictionaries = mutableListOf<MutableMap<String, Any>>()
         //А теперь точно всё выполнилось и проверяем чё получили
         for (future in futures) {
@@ -88,7 +91,7 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
             .toList()
             .joinToString("&")
 
-        println(parameters.entries.joinToString())
+//        println(parameters.entries.joinToString())
 
         return try {
             val response = get(encodedUrl, timeout = Utils.TRACKER_TIMEOUT)

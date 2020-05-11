@@ -16,5 +16,4 @@ fun main() {
     println(announceInfo.incomplete)
     println(announceInfo.interval)
     println(announceInfo.peers.joinToString("\n"))
-
 }
