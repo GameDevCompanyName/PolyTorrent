@@ -11,7 +11,7 @@ import java.util.List;
 public class Have implements Message{
     private static final int LENGTH = 5;
     private MessageId messageId;
-    private int pieceId;
+    private Integer pieceId;
 
     public Have(int pieceId) {
         messageId = MessageId.HAVE;

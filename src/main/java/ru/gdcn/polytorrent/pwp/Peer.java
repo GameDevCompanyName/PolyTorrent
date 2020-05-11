@@ -3,8 +3,10 @@ package ru.gdcn.polytorrent.pwp;
 import lombok.Builder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
+import ru.gdcn.polytorrent.pwp.message.Have;
 
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -17,10 +19,15 @@ public class Peer {
         this.ip = ip;
         this.port = port;
         this.peerId = peerId;
+        piecesId = new HashSet<>();
     }
 
     private InetAddress ip;
     private int port;
     private Byte[] peerId;
-    private Set<Long> piecesId;
+    private Set<Integer> piecesId;
+
+    public void addPiece(Have have) {
+        piecesId.add(have.getPieceId());
+    }
 }

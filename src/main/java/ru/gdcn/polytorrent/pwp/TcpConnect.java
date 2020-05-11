@@ -15,9 +15,12 @@ public class TcpConnect {
     public void run() throws IOException {
         try {
             socket = new Socket(peer.getIp(), peer.getPort());
-            new PeerSession(peer, socket);
-        } finally {
-            socket.close();
+            if (!socket.isClosed()) {
+                System.out.println("connected");
+                new PeerSession(peer, socket);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
