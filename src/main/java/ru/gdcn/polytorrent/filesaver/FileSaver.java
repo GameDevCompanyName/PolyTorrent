@@ -30,7 +30,7 @@ public class FileSaver {
     }
 
 
-    public synchronized void savePiece(int index, int begin, byte[] block) {
+    public synchronized void saveBlock(int index, int begin, byte[] block) {
         Piece piece = pieces.get(index);
         if (!piece.isCompleted()) {
             try {

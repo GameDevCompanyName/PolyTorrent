@@ -48,6 +48,7 @@ public class PeerSession {
         for (Message message : packageReader.getMessage()) {
             if (message.getMessageId().equals(MessageId.HAVE)) {
                 Have have = (Have) message;
+                peer.addPieceId(have);
             }
         }
     }

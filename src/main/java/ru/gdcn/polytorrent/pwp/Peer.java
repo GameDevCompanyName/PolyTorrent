@@ -5,6 +5,7 @@ import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import ru.gdcn.polytorrent.Utilities;
 import ru.gdcn.polytorrent.pwp.message.Bitfield;
+import ru.gdcn.polytorrent.pwp.message.Have;
 
 import java.net.InetAddress;
 import java.util.HashSet;
@@ -40,5 +41,9 @@ public class Peer {
                 }
             }
         }
+    }
+
+    public void addPieceId(Have have) {
+        piecesId.add((long) have.getPieceId());
     }
 }
