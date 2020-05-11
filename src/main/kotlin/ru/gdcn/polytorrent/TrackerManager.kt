@@ -10,7 +10,7 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import kotlin.streams.toList
 
-class TrackerManager(private val metafile: Metafile, private val peerId: ByteArray) {
+class TrackerManager(private val metafile: Metadata, private val peerId: ByteArray) {
     private val trackerList: MutableList<String> = mutableListOf()
 
     init {

@@ -7,7 +7,9 @@ import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest
 
-class Metafile(val metafile: File) {
+class Metadata(val metafile: File) {
+
+    val BLOCK_SIZE = 16384
     private var dictionary: Map<String, Any>
 
     init {
@@ -49,6 +51,11 @@ class Metafile(val metafile: File) {
     override fun toString(): String {
         return "{$announce\n$announceList\n$comment\n$createdBy\n$creationDate\n$info}"
     }
+
+    val blockQuantity: Long
+        get() = (info.pieceLength / BLOCK_SIZE).toLong() + ((info.pieceLength % BLOCK_SIZE) > 0).toInt()
+
+    fun Boolean.toInt() = if (this) 1 else 0
 
     class Metainfo(map: Map<String, Any>) {
         private var dictionary: Map<String, Any> = map
