@@ -31,9 +31,9 @@ public class FileSaver {
 
     private FileSaver() {}
 
-    public static FileSaver getInstance() {
+    public static FileSaver getInstance(Metafile metafile, File saveDirectory) {
         if (fileSaver == null) {
-            fileSaver = new FileSaver();
+            fileSaver = new FileSaver(metafile, saveDirectory);
         }
         return fileSaver;
     }
