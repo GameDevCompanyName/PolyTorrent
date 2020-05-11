@@ -20,12 +20,6 @@ class Metadata(val metafile: File) {
     val announce: String
         get() = dictionary["announce"].toString()
 
-//    val announceList: List<String>
-//        get() = (dictionary.getOrDefault(
-//            "announce-list",
-//            listOf(emptyList<String>())
-//        ) as List<List<String>>).map { it.first() }
-
     val announceList: List<String>
         get() {
             val announceLists: List<List<String>> = dictionary.getOrDefault(

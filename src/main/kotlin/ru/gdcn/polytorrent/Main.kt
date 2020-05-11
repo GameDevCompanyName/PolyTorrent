@@ -11,12 +11,10 @@ fun main() {
     val metafile = Metadata(file)
 
     val manager = TrackerManager(metafile, peerId)
-    val announceInfo: Optional<AnnounceInfo> = manager.getAnnounceInfo()
-    if (announceInfo.isPresent){
-        println(announceInfo.get().complete)
-        println(announceInfo.get().incomplete)
-        println(announceInfo.get().interval)
-        println(announceInfo.get().peers.joinToString("\n"))
-    }
+    val announceInfo: AnnounceInfo = manager.getAnnounceInfo()
+    println(announceInfo.complete)
+    println(announceInfo.incomplete)
+    println(announceInfo.interval)
+    println(announceInfo.peers.joinToString("\n"))
 
 }

@@ -1,6 +1,7 @@
 package ru.gdcn.polytorrent
 
 import com.dampcake.bencode.Bencode
+import com.dampcake.bencode.BencodeException
 import com.dampcake.bencode.Type
 import khttp.*
 import khttp.responses.Response
@@ -9,13 +10,16 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.*
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 import kotlin.streams.toList
 
 class TrackerManager(private val metafile: Metadata, private val peerId: ByteArray) {
     private val trackerList: MutableList<String> = mutableListOf()
 
     init {
-        if (metafile.announceList.isEmpty()){
+        if (metafile.announceList.isEmpty()) {
             trackerList.add(metafile.announce)
         } else {
             trackerList.addAll(metafile.announceList)
@@ -23,38 +27,50 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
         }
     }
 
-    fun getAnnounceInfo(): Optional<AnnounceInfo> {
-        var announceInfo: AnnounceInfo? = null
-        while (announceInfo == null && trackerList.isNotEmpty()) {
-            val urlString = trackerList.first()
-            if (!urlString.startsWith("http")) {
-                trackerList.remove(urlString)
+    fun getAnnounceInfo(): AnnounceInfo {
+        val futures = mutableListOf<Future<Optional<Response>>>()
+        val executorService = Executors.newFixedThreadPool(4)
+
+        for (tracker in trackerList) {
+            if (!tracker.startsWith("http")) {
                 continue
             }
-            println("Спрашиваем $urlString")
-            val response: Optional<Response> = askTracker(urlString)
-            if (response.isEmpty) {
-                println("Ошибка соединения с сервером $urlString")
-                trackerList.remove(urlString)
-                continue
+
+            val future: Future<Optional<Response>> = executorService.submit<Optional<Response>> {
+                return@submit askTracker(tracker)
             }
-//            println(response.get().text)
-            val responseDictionary = Bencode().decode(response.get().content, Type.DICTIONARY)
-            if (responseDictionary.containsKey("failure reason")) {
-                println("Ошибка от сервера $urlString: ${responseDictionary["failure reason"].toString()}")
-                trackerList.remove(urlString)
+            futures.add(future)
+        }
+
+        //Ждём пока все фучуры выполнятся
+        for (future in futures) {
+            future.get()
+        }
+
+//        val dictionaries = mutableListOf<MutableMap<String, Any>>()
+        //А теперь точно всё выполнилось и проверяем чё получили
+        for (future in futures) {
+            if (future.get().isEmpty){
                 continue
-            }
-            if (responseDictionary.containsKey("peers")) {
-                println("Получили данные о пирах от $urlString")
-                return Optional.of(AnnounceInfo(responseDictionary))
-                break
+            } else {
+                try {
+                    val responseDictionary = Bencode().decode(future.get().get().content, Type.DICTIONARY)
+                    if (responseDictionary.containsKey("failure reason")) {
+                    println("Ошибка от сервера: ${responseDictionary["failure reason"].toString()}")
+//                    trackerList.remove(urlString)
+                        continue
+                    } else {
+//                        dictionaries.add(responseDictionary)
+                        return AnnounceInfo(responseDictionary)
+                    }
+                } catch (e: BencodeException){
+                    //Не удалось распарсить ответ
+                    continue
+                }
             }
         }
-        if (announceInfo == null) {
-            throw IllegalStateException("Информация аннонса недоступна")
-        }
-        return Optional.empty()
+
+        throw IllegalStateException("Не удалось получить информацию об анонсах")
     }
 
     private fun askTracker(urlString: String): Optional<Response> {

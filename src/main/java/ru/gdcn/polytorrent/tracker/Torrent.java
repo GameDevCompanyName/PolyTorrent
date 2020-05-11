@@ -26,13 +26,7 @@ public class Torrent {
         Metadata metadata = new Metadata(savedirectory);
 
         TrackerManager manager = new TrackerManager(metadata, peerId);
-        Optional<AnnounceInfo> trackerResponse = manager.getAnnounceInfo();
-        AnnounceInfo announceInfo;
-        if (trackerResponse.isPresent()){
-            announceInfo = trackerResponse.get();
-        } else {
-            throw new IllegalStateException("Не удалось получить информацию от трекеров.");
-        }
+        AnnounceInfo announceInfo = manager.getAnnounceInfo();
         System.out.println(announceInfo.getPeers().size());
 
         FileSaver fileSaver = FileSaver.getInstance(metadata, savedirectory);
