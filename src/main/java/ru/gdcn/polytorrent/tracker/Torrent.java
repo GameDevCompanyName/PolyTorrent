@@ -24,14 +24,14 @@ public class Torrent {
         String filename = args[0];
         byte[] peerId = new byte[20];
         new Random().nextBytes(peerId);
-
-        Metafile metafile = new Metafile(new File(filename));
+        File savedirectory = new File(filename);
+        Metafile metafile = new Metafile(savedirectory);
 
         TrackerManager manager = new TrackerManager(metafile, peerId);
         AnnounceInfo announceInfo = manager.getAnnounceInfo();
         System.out.println(announceInfo.getPeers().size());
 
-        FileSaver fileSaver = FileSaver.getInstance();
+        FileSaver fileSaver = FileSaver.getInstance(metafile, savedirectory);
         try {
             fileSaver.init();
         } catch (IOException e) {
