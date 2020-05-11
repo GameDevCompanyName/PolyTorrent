@@ -6,17 +6,21 @@ import org.slf4j.LoggerFactory;
 import ru.gdcn.polytorrent.AnnounceInfo;
 import ru.gdcn.polytorrent.Metafile;
 import ru.gdcn.polytorrent.TrackerManager;
+import ru.gdcn.polytorrent.Utilities;
 import ru.gdcn.polytorrent.filesaver.FileSaver;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+import static ru.gdcn.polytorrent.Utilities.isBitSet;
+
 public class Torrent {
     private static final int PORT = 6881;
     private static final Logger logger = LoggerFactory.getLogger(Torrent.class);
 
     public static void main(String[] args) {
+
         String filename = args[0];
         byte[] peerId = new byte[20];
         new Random().nextBytes(peerId);
