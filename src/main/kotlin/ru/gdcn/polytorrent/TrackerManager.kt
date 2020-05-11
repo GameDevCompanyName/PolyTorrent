@@ -8,6 +8,7 @@ import ru.gdcn.polytorrent.Utilities.byteArrayToURLString
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.util.*
 import kotlin.streams.toList
 
 class TrackerManager(private val metafile: Metadata, private val peerId: ByteArray) {
@@ -22,7 +23,7 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
         }
     }
 
-    fun getAnnounceInfo(): AnnounceInfo {
+    fun getAnnounceInfo(): Optional<AnnounceInfo> {
         var announceInfo: AnnounceInfo? = null
         while (announceInfo == null && trackerList.isNotEmpty()) {
             val urlString = trackerList.first()
@@ -31,15 +32,14 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
                 continue
             }
             println("Спрашиваем $urlString")
-            val response: Response? = askTracker(urlString)
-            if (response == null) {
+            val response: Optional<Response> = askTracker(urlString)
+            if (response.isEmpty) {
                 println("Ошибка соединения с сервером $urlString")
                 trackerList.remove(urlString)
                 continue
             }
-            println(response.text)
-
-            val responseDictionary = Bencode().decode(response.content, Type.DICTIONARY)
+//            println(response.get().text)
+            val responseDictionary = Bencode().decode(response.get().content, Type.DICTIONARY)
             if (responseDictionary.containsKey("failure reason")) {
                 println("Ошибка от сервера $urlString: ${responseDictionary["failure reason"].toString()}")
                 trackerList.remove(urlString)
@@ -47,18 +47,17 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
             }
             if (responseDictionary.containsKey("peers")) {
                 println("Получили данные о пирах от $urlString")
-                return AnnounceInfo(responseDictionary)
-                //TODO OPTIONAL
+                return Optional.of(AnnounceInfo(responseDictionary))
                 break
             }
         }
         if (announceInfo == null) {
             throw IllegalStateException("Информация аннонса недоступна")
         }
-        return announceInfo
+        return Optional.empty()
     }
 
-    private fun askTracker(urlString: String): Response? {
+    private fun askTracker(urlString: String): Optional<Response> {
         val parameters = mutableMapOf<String, String>()
         parameters["info_hash"] = byteArrayToURLString(metafile.infoHash.toByteArray())
         parameters["peer_id"] = byteArrayToURLString(peerId)
@@ -77,16 +76,16 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
 
         return try {
             val response = get(encodedUrl, timeout = Utils.TRACKER_TIMEOUT)
-            response
+            Optional.of(response)
         } catch (e: SocketTimeoutException) {
             println("Трекер не ответил")
-            null //TODO OPTIONAL
+            Optional.empty()
         } catch (e: UnknownHostException) {
             println("Не удалось узнать адрес хоста")
-            null
+            Optional.empty()
         } catch (e: ConnectException) {
             println("Ошибка подключения")
-            null
+            Optional.empty()
         }
     }
 

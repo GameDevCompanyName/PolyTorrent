@@ -10,6 +10,7 @@ import ru.gdcn.polytorrent.filesaver.FileSaver;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Random;
 
 public class Torrent {
@@ -25,7 +26,13 @@ public class Torrent {
         Metadata metadata = new Metadata(savedirectory);
 
         TrackerManager manager = new TrackerManager(metadata, peerId);
-        AnnounceInfo announceInfo = manager.getAnnounceInfo();
+        Optional<AnnounceInfo> trackerResponse = manager.getAnnounceInfo();
+        AnnounceInfo announceInfo;
+        if (trackerResponse.isPresent()){
+            announceInfo = trackerResponse.get();
+        } else {
+            throw new IllegalStateException("Не удалось получить информацию от трекеров.");
+        }
         System.out.println(announceInfo.getPeers().size());
 
         FileSaver fileSaver = FileSaver.getInstance(metadata, savedirectory);
