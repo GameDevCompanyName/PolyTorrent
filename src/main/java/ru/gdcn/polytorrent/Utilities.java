@@ -92,4 +92,10 @@ public class Utilities {
         for (Byte b : bytesObj) bytes[i++] = b;
         return bytes;
     }
+
+    public static boolean isBitSet(final byte origin,
+                                   final int index) {
+        return ((origin << index) & 0b10000000) == 0b10000000;
+    }
+
 }

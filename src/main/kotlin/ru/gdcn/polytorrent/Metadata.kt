@@ -7,7 +7,9 @@ import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest
 
-class Metafile(val metafile: File) {
+class Metadata(val metafile: File) {
+
+    val BLOCK_SIZE = 16384
     private var dictionary: Map<String, Any>
 
     init {
@@ -19,10 +21,21 @@ class Metafile(val metafile: File) {
         get() = dictionary["announce"].toString()
 
     val announceList: List<String>
-        get() = (dictionary.getOrDefault(
-            "announce-list",
-            listOf(emptyList<String>())
-        ) as List<List<String>>).map { it.first() }
+        get() {
+            val announceLists: List<List<String>> = dictionary.getOrDefault(
+                "announce-list",
+                listOf(emptyList<String>())
+            ) as List<List<String>>
+            if (announceLists.isEmpty()) {
+                return emptyList()
+            } else {
+                val resultList = mutableListOf<String>()
+                for (list in announceLists) {
+                    resultList.addAll(list)
+                }
+                return resultList
+            }
+        }
 
     val comment: String
         get() = dictionary.getOrDefault("comment", "").toString()
@@ -36,19 +49,24 @@ class Metafile(val metafile: File) {
     val info: Metainfo
         get() = Metainfo(dictionary["info"] as Map<String, Any>)
 
-    val infoHash: ByteArray
+    val infoHash: Array<Byte>
         get() {
             val inputStream = FileInputStream(metafile)
             val fileBytes = inputStream.readAllBytes()
             val firstIndex = String(fileBytes).indexOf("4:infod6:") + 6
             val subBytes = fileBytes.copyOfRange(firstIndex, fileBytes.size - 1)
             val hasher = MessageDigest.getInstance("SHA-1")
-            return hasher.digest(subBytes)
+            return hasher.digest(subBytes).toTypedArray()
         }
 
     override fun toString(): String {
         return "{$announce\n$announceList\n$comment\n$createdBy\n$creationDate\n$info}"
     }
+
+    val blockQuantity: Long
+        get() = (info.pieceLength / BLOCK_SIZE).toLong() + ((info.pieceLength % BLOCK_SIZE) > 0).toInt()
+
+    fun Boolean.toInt() = if (this) 1 else 0
 
     class Metainfo(map: Map<String, Any>) {
         private var dictionary: Map<String, Any> = map

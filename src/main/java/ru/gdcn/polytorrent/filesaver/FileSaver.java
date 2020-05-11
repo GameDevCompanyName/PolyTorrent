@@ -2,7 +2,7 @@ package ru.gdcn.polytorrent.filesaver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.gdcn.polytorrent.Metafile;
+import ru.gdcn.polytorrent.Metadata;
 import ru.gdcn.polytorrent.PieceHash;
 import ru.gdcn.polytorrent.tracker.FileData;
 
@@ -17,23 +17,23 @@ import java.util.List;
 public class FileSaver {
     private static final Logger logger = LoggerFactory.getLogger(FileSaver.class);
 
-    Metafile.Metainfo metafile;
+    Metadata.Metainfo metafile;
     private final List<Piece> pieces = new ArrayList<>();
     List<RandomAccessFile> files = new LinkedList<>();
     File saveDirectory;
 
     private static FileSaver fileSaver;
 
-    public FileSaver(Metafile metafile, File saveDirectory) {
+    public FileSaver(Metadata metafile, File saveDirectory) {
         this.metafile = metafile.getInfo();
         this.saveDirectory = saveDirectory;
     }
 
     private FileSaver() {}
 
-    public static FileSaver getInstance() {
+    public static FileSaver getInstance(Metadata metafile, File saveDirectory) {
         if (fileSaver == null) {
-            fileSaver = new FileSaver();
+            fileSaver = new FileSaver(metafile, saveDirectory);
         }
         return fileSaver;
     }

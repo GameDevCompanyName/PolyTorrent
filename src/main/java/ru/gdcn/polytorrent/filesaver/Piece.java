@@ -1,5 +1,7 @@
 package ru.gdcn.polytorrent.filesaver;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +17,11 @@ public class Piece {
     private static final Logger logger = LoggerFactory.getLogger(Piece.class);
 
     private final byte[] sha1;
+
+    @Getter
+    @Setter
     private long length;
+
     private final List<FilePieceMapper> filePointers;
     private Set<PieceBlock> blocks;
 
@@ -26,14 +32,6 @@ public class Piece {
         }
         this.filePointers = new ArrayList<>();
         blocks = new TreeSet<>();
-    }
-
-    public long getLength() {
-        return length;
-    }
-
-    public void setLength(long length) {
-        this.length = length;
     }
 
     public List<FilePieceMapper> getFilePointers() {
@@ -126,7 +124,7 @@ public class Piece {
 
         blocks.add(newPieceBlock);
 
-        Iterator<PieceBlock> iterator = blocks.iterator();
+/*        Iterator<PieceBlock> iterator = blocks.iterator();
         PieceBlock prev = iterator.next();
 
         Collection<PieceBlock> blocksToBeRemoved = new LinkedList<>();
@@ -144,7 +142,7 @@ public class Piece {
 
         for (PieceBlock pb : blocksToBeRemoved) {
             blocks.remove(pb);
-        }
+        }*/
     }
 
     public boolean isAvaiable(int begin, int length) {
@@ -190,9 +188,9 @@ public class Piece {
 
     private class PieceBlock implements Comparable<PieceBlock> {
 
-        public PieceBlock(long begin, long lenght) {
+        public PieceBlock(long begin, long length) {
             this.begin = begin;
-            this.length = lenght;
+            this.length = length;
         }
 
         public long begin;
