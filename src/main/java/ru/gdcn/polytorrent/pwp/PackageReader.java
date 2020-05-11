@@ -2,49 +2,89 @@ package ru.gdcn.polytorrent.pwp;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.gdcn.polytorrent.Utilities;
 import ru.gdcn.polytorrent.pwp.message.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static ru.gdcn.polytorrent.Utilities.getIntFromFourBytes;
+
 @Data
 @NoArgsConstructor
 public class PackageReader {
+    private static final Logger logger = LoggerFactory.getLogger(PackageReader.class);
     private static final int HEADER_LEN = 5;
-    private List<Message> message;
+    private List<Message> messages;
+    private Message message;
 
     public PackageReader read(byte[] bytes) {
-        message = new ArrayList<>();
+        switch (MessageId.getMessageId(bytes[4])) {
+            case CHOKE:
+                message = new StateMessage().choke();
+                break;
+            case UNCHOKE:
+                message = new StateMessage().unChoke();
+                break;
+            case INTERESTED:
+                message = new StateMessage().interested();
+                break;
+            case NOT_INTERESTED:
+                message = new StateMessage().notInterested();
+                break;
+            case HAVE:
+                readHaveMsg(bytes, 0, bytes.length);
+                break;
+            case BITFIELD:
+                readBitfieldMsg(bytes, 0, bytes.length);
+                break;
+            case REQUEST:
+                readRequestMsg(bytes, 0, bytes.length);
+                break;
+            case PIECE:
+                readPieceMsg(bytes, 0, bytes.length);
+                break;
+            default:
+                logger.info("Read unknown message");
+                break;
+        }
+        return this;
+    }
+
+    public PackageReader readAll(byte[] bytes) {
+        messages = new ArrayList<>();
         int pos = 0;
         while (pos < bytes.length) {
-            int len = bytes[pos + 3];
+            int len = getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, pos + 4));
             int end = pos + len + 4;
             switch (MessageId.getMessageId(bytes[pos + 4])) {
                 case CHOKE:
-                    message.add(new StateMessage().choke());
+                    messages.add(new StateMessage().choke());
                     break;
                 case UNCHOKE:
-                    message.add(new StateMessage().unChoke());
+                    messages.add(new StateMessage().unChoke());
                     break;
                 case INTERESTED:
-                    message.add(new StateMessage().interested());
+                    messages.add(new StateMessage().interested());
                     break;
                 case NOT_INTERESTED:
-                    message.add(new StateMessage().notInterested());
+                    messages.add(new StateMessage().notInterested());
                     break;
                 case HAVE:
-                    readHaveMsg(bytes, pos, end);
+                    messages.add(readHaveMsg(bytes, pos + HEADER_LEN, end));
                     break;
                 case BITFIELD:
-                    readBitfieldMsg(bytes, pos, end);
+                    messages.add(readBitfieldMsg(bytes, pos + HEADER_LEN, end));
                     break;
                 case REQUEST:
-                    readRequestMsg(bytes, pos, end);
+                    messages.add(readRequestMsg(bytes, pos + HEADER_LEN, end));
                     break;
                 case PIECE:
-                    readPieceMsg(bytes, pos, end);
+                    messages.add(readPieceMsg(bytes, pos + HEADER_LEN, end));
                     break;
             }
             pos += len + 4;
@@ -52,34 +92,28 @@ public class PackageReader {
         return this;
     }
 
-    public boolean isHandshake() {
-        return true;
+    private Have readHaveMsg(byte[] bytes, int pos, int end) {
+        return new Have(getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, end)));
     }
 
-    private void readHaveMsg(byte[] bytes, int pos, int end) {
-        message.add(new Have(Utilities.getIntFromFourBytes(Arrays.copyOfRange(bytes, pos + HEADER_LEN, end))));
+    private Bitfield readBitfieldMsg(byte[] bytes, int pos, int end) {
+        return new Bitfield(Arrays.copyOfRange(bytes, pos, end));
     }
 
-    private void readBitfieldMsg(byte[] bytes, int pos, int end) {
-        message.add(new Bitfield(Arrays.copyOfRange(bytes, pos + HEADER_LEN, end)));
+    private Request readRequestMsg(byte[] bytes, int pos, int end) {
+        int pieceId = getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, pos + 4));
+        pos += 4;
+        int offset = getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, pos + 4));
+        pos += 4;
+        int pieceLen = getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, end));
+        return new Request(pieceId, offset, pieceLen);
     }
 
-    private void readRequestMsg(byte[] bytes, int pos, int end) {
-        pos += HEADER_LEN;
-        int pieceId = Utilities.getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, pos + 4));
+    private Piece readPieceMsg(byte[] bytes, int pos, int end) {
+        int pieceId = getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, pos + 4));
         pos += 4;
-        int offset = Utilities.getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, pos + 4));
+        int offset = getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, pos + 4));
         pos += 4;
-        int pieceLen = Utilities.getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, end));
-        message.add(new Request(pieceId, offset, pieceLen));
-    }
-
-    private void readPieceMsg(byte[] bytes, int pos, int end) {
-        pos += HEADER_LEN;
-        int pieceId = Utilities.getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, pos + 4));
-        pos += 4;
-        int offset = Utilities.getIntFromFourBytes(Arrays.copyOfRange(bytes, pos, pos + 4));
-        pos += 4;
-        message.add(new Piece(pieceId, offset, Arrays.copyOfRange(bytes, pos, end)));
+        return new Piece(pieceId, offset, Arrays.copyOfRange(bytes, pos, end));
     }
 }

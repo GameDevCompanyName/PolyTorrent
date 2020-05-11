@@ -17,6 +17,7 @@ public class Handshake implements Message{
     private Byte[] ourPeerId;
 
     public Handshake(Byte[] infoHash, Byte[] ourPeerId) {
+        this.messageId = MessageId.HANDSHAKE;
         this.infoHash = infoHash;
         this.ourPeerId = ourPeerId;
     }

@@ -10,7 +10,8 @@ public enum MessageId {
     REQUEST(6),
     PIECE(7),
     CANCEL(8),
-    PORT(9);
+    PORT(9),
+    HANDSHAKE(100);
 
     private int id;
 

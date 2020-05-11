@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static ru.gdcn.polytorrent.Utilities.getIntFromFourBytes;
+
 @Data
 public class Have implements Message{
     private static final int LENGTH = 5;

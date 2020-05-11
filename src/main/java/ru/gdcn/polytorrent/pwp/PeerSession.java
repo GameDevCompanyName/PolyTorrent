@@ -2,7 +2,7 @@ package ru.gdcn.polytorrent.pwp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.gdcn.polytorrent.filesaver.FileSaver;
+import ru.gdcn.polytorrent.Utilities;
 import ru.gdcn.polytorrent.pwp.message.*;
 
 import java.io.*;
@@ -27,7 +27,7 @@ public class PeerSession {
     }
 
     private void mainCycle() {
-        System.out.println("in main cycle");
+        logger.info("In main cycle");
         if (!handshake()) {
             logger.error("Некорректное handshake сообщение от пира");
             return;
@@ -46,19 +46,11 @@ public class PeerSession {
         Handshake handshake = new Handshake(SessionInfo.infoHash, SessionInfo.ourPeerId);
         sendMsg(handshake.getBytes());
         byte[] bytes = getMsg();
-        return Handshake.isHandshakeResponse(Arrays.copyOfRange(bytes, 0, 68), SessionInfo.infoHash, peer.getPeerId());
+        return Handshake.isHandshakeResponse(Arrays.copyOfRange(getMsg(), 0, 68), SessionInfo.infoHash, peer.getPeerId());
     }
 
     private void getPieceInfo(PackageReader packageReader) {
-        for (Message message : packageReader.getMessage()) {
-            switch (message.getMessageId()) {
-                case HAVE:
-                    peer.addPiece((Have) message);
-                    break;
-                case BITFIELD:
-                    break;
-            }
-        }
+
     }
 
     private void sendMsg(byte[] bytes) {
@@ -72,7 +64,12 @@ public class PeerSession {
 
     private byte[] getMsg() {
         try {
-            return in.readAllBytes();
+            byte[] lenBytes = new byte[4];
+            in.read(lenBytes, 0, 4);
+            int len = Utilities.getIntFromFourBytes(lenBytes);
+            byte[] msg = new byte[len];
+            in.read(msg, 0, len);
+            return msg;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
