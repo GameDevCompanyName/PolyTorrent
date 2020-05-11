@@ -20,11 +20,28 @@ class Metadata(val metafile: File) {
     val announce: String
         get() = dictionary["announce"].toString()
 
+//    val announceList: List<String>
+//        get() = (dictionary.getOrDefault(
+//            "announce-list",
+//            listOf(emptyList<String>())
+//        ) as List<List<String>>).map { it.first() }
+
     val announceList: List<String>
-        get() = (dictionary.getOrDefault(
-            "announce-list",
-            listOf(emptyList<String>())
-        ) as List<List<String>>).map { it.first() }
+        get() {
+            val announceLists: List<List<String>> = dictionary.getOrDefault(
+                "announce-list",
+                listOf(emptyList<String>())
+            ) as List<List<String>>
+            if (announceLists.isEmpty()) {
+                return emptyList()
+            } else {
+                val resultList = mutableListOf<String>()
+                for (list in announceLists) {
+                    resultList.addAll(list)
+                }
+                return resultList
+            }
+        }
 
     val comment: String
         get() = dictionary.getOrDefault("comment", "").toString()
