@@ -1,4 +1,4 @@
-package ru.gdcn.polytorrent.tracker;
+package ru.gdcn.polytorrent.torrent;
 
 
 import org.slf4j.Logger;
@@ -10,7 +10,6 @@ import ru.gdcn.polytorrent.filesaver.FileSaver;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.Random;
 
 public class Torrent {
@@ -25,6 +24,8 @@ public class Torrent {
         File savedirectory = new File(filename);
         Metadata metadata = new Metadata(savedirectory);
 
+        //Его теперь нужно закрывать, так как он Closable
+        //Правда пока не знаю где
         TrackerManager manager = new TrackerManager(metadata, peerId);
         AnnounceInfo announceInfo = manager.getAnnounceInfo();
         System.out.println(announceInfo.getPeers().size());

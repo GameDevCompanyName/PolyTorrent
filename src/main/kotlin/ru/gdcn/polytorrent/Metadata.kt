@@ -1,18 +1,22 @@
 package ru.gdcn.polytorrent
 
 import com.dampcake.bencode.Bencode
+import com.dampcake.bencode.BencodeException
 import com.dampcake.bencode.Type
-import ru.gdcn.polytorrent.tracker.FileData
+import org.slf4j.LoggerFactory
+import ru.gdcn.polytorrent.torrent.FileData
 import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest
 
-class Metadata(val metafile: File) {
+class Metadata(private val metafile: File) {
 
     val BLOCK_SIZE = 16384
     private var dictionary: Map<String, Any>
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     init {
+        logger.info("Пытаюсь распарсить метафайл")
         val content = metafile.inputStream().readAllBytes()
         dictionary = Bencode(Charsets.US_ASCII).decode(content, Type.DICTIONARY)
     }
@@ -66,7 +70,7 @@ class Metadata(val metafile: File) {
     val blockQuantity: Long
         get() = (info.pieceLength / BLOCK_SIZE).toLong() + ((info.pieceLength % BLOCK_SIZE) > 0).toInt()
 
-    fun Boolean.toInt() = if (this) 1 else 0
+    private fun Boolean.toInt() = if (this) 1 else 0
 
     class Metainfo(map: Map<String, Any>) {
         private var dictionary: Map<String, Any> = map

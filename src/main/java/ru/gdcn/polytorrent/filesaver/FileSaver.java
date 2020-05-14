@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.gdcn.polytorrent.Metadata;
 import ru.gdcn.polytorrent.PieceHash;
-import ru.gdcn.polytorrent.tracker.FileData;
+import ru.gdcn.polytorrent.torrent.FileData;
 
 import java.io.File;
 import java.io.IOException;
