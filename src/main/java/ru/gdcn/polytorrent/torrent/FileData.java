@@ -8,9 +8,12 @@ public class FileData {
 
     private final List<String> path;
 
-    public FileData(long length, List<String> path) {
+    private final String md5sum;
+
+    public FileData(long length, List<String> path, String md5sum) {
         this.length = length;
         this.path = path;
+        this.md5sum = md5sum;
     }
 
     public long getLength() {
@@ -19,5 +22,9 @@ public class FileData {
 
     public List<String> getPath() {
         return path;
+    }
+
+    public String getMd5sum() {
+        return md5sum;
     }
 }

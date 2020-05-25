@@ -19,6 +19,7 @@ class Metadata(private val metafile: File) {
         logger.info("Пытаюсь распарсить метафайл")
         val content = metafile.inputStream().readAllBytes()
         dictionary = Bencode(Charsets.US_ASCII).decode(content, Type.DICTIONARY)
+//        dictionary = Bencode().decode(content, Type.DICTIONARY)
     }
 
     val announce: String
@@ -30,14 +31,14 @@ class Metadata(private val metafile: File) {
                 "announce-list",
                 listOf(emptyList<String>())
             ) as List<List<String>>
-            if (announceLists.isEmpty()) {
-                return emptyList()
+            return if (announceLists.isEmpty()) {
+                emptyList()
             } else {
                 val resultList = mutableListOf<String>()
                 for (list in announceLists) {
                     resultList.addAll(list)
                 }
-                return resultList
+                resultList
             }
         }
 
@@ -75,19 +76,34 @@ class Metadata(private val metafile: File) {
     class Metainfo(map: Map<String, Any>) {
         private var dictionary: Map<String, Any> = map
 
-        val isSingleFile: Boolean
-            get() = true
+        val isSingleFile: Boolean = !dictionary.containsKey("files")
 
         val fileDatas: List<FileData>
             get() {
-                return listOf(FileData(length, listOf(name)))
+                if (isSingleFile){
+                    return listOf(
+                        FileData(
+                            dictionary["length"].toString().toLong(),
+                            listOf(name.toByteArray(Charsets.US_ASCII).toString(Charsets.UTF_8)),
+                            dictionary.getOrDefault("md5sum", "").toString()
+                        )
+                    )
+                } else {
+                    val list = mutableListOf<FileData>()
+                    for (flex in dictionary["files"] as List<Map<String, Any>>){
+                        list.add(
+                            FileData(
+                                flex["length"].toString().toLong(),
+                                (flex["path"] as List<String>).map {
+                                    it.toByteArray(Charsets.US_ASCII).toString(Charsets.UTF_8)
+                                },
+                                flex.getOrDefault("md5sum", "").toString()
+                            )
+                        )
+                    }
+                    return list
+                }
             }
-
-        val length: Long
-            get() = dictionary["length"].toString().toLong()
-
-        val md5sum: String
-            get() = dictionary.getOrDefault("md5sum", "").toString()
 
         val name: String
             get() = dictionary["name"].toString()
@@ -110,10 +126,6 @@ class Metadata(private val metafile: File) {
                 }
                 return list
             }
-
-        override fun toString(): String {
-            return "{$length,$md5sum,$name,$pieceLength,${pieceHashes.joinToString()}}"
-        }
     }
 
 }

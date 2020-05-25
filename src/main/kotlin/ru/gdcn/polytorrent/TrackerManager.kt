@@ -120,7 +120,7 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
         parameters["port"] = Utils.PORT
         parameters["uploaded"] = "0"
         parameters["downloaded"] = "0"
-        parameters["left"] = metafile.info.length.toString()
+        parameters["left"] = metafile.info.fileDatas.map { it.length }.sum().toString()
 //        parameters["compact"] = "1"
 
         val encodedUrl = urlString + "?" + parameters.entries.stream()
