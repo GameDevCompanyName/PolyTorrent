@@ -38,41 +38,45 @@ public class PeerSession {
     }
 
     private void mainCycle() {
-        logger.info("In main cycle");
-        if (!handshake()) {
-            logger.error("Wrong handshake answer");
-            closeSocket();
-            return;
-        }
-        logger.info("Handshake done");
-        PackageReader packageReader = new PackageReader().read(getMsg());
-
-        getPieceInfo(packageReader);
-        logger.info("Get bitfield");
-
-        sendMsg(new StateMessage().interested().getBytes());
-        logger.info("Send interested message");
-
-        if (!getUnckoke(packageReader.read(getMsg()))) {
-            logger.error("No unchoke answer");
-            closeSocket();
-            return;
-        }
-        logger.info("Get unchoke");
-
-        int tempPieceId = choosePiece(-1);
-        while (tempPieceId != -1) {
-            int offset = 0;
-            for (int i = 0; i < SessionInfo.NUM_OF_BLOCKS; i++) {
-                sendMsg(new Request(tempPieceId, offset, SessionInfo.PIECE_LEN).getBytes());
-                offset += SessionInfo.PIECE_LEN;
-                Piece piece = (Piece) packageReader.read(getMsg()).getMessage();
-                logger.info("Get piece with id: " + piece.getPieceId());
+        try {
+            logger.info("In main cycle");
+            if (!handshake()) {
+                logger.error("Wrong handshake answer");
+                closeSocket();
+                return;
             }
-            tempPieceId = choosePiece(tempPieceId);
-        }
+            logger.info("Handshake done");
+            PackageReader packageReader = new PackageReader().read(getMsg());
 
-        closeSocket();
+            getPieceInfo(packageReader);
+            logger.info("Get bitfield");
+
+            sendMsg(new StateMessage().interested().getBytes());
+            logger.info("Send interested message");
+
+            if (!getUnckoke(packageReader.read(getMsg()))) {
+                logger.error("No unchoke answer");
+                closeSocket();
+                return;
+            }
+            logger.info("Get unchoke");
+
+            int tempPieceId = choosePiece(-1);
+            while (tempPieceId != -1) {
+                int offset = 0;
+                for (int i = 0; i < SessionInfo.NUM_OF_BLOCKS; i++) {
+                    sendMsg(new Request(tempPieceId, offset, SessionInfo.PIECE_LEN).getBytes());
+                    offset += SessionInfo.PIECE_LEN;
+                    Piece piece = (Piece) packageReader.read(getMsg()).getMessage();
+                    logger.info("Get piece with id: " + piece.getPieceId());
+                }
+                tempPieceId = choosePiece(tempPieceId);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        } finally {
+            closeSocket();
+        }
         return;
     }
 
@@ -86,7 +90,8 @@ public class PeerSession {
         while (iterator.hasNext()) {
             int id = iterator.next();
             if (SessionInfo.receivedPieces.contains(id) || SessionInfo.requestedPieces.contains(id)) {
-                peer.getPiecesId().remove(id);
+//                peer.getPiecesId().remove(id);
+                continue;
             } else {
                 SessionInfo.requestedPieces.add(id);
                 return id;

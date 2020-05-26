@@ -1,5 +1,6 @@
 package ru.gdcn.polytorrent
 
+import org.slf4j.LoggerFactory
 import ru.gdcn.polytorrent.pwp.SessionInfo
 import java.io.File
 import java.lang.Exception
@@ -7,6 +8,8 @@ import kotlin.random.Random
 
 
 fun main() {
+
+
 
     val peerId = Random.nextBytes(20)
     val file = File("torrents/ubuntu20.torrent")

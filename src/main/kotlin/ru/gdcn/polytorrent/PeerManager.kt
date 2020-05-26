@@ -1,5 +1,6 @@
 package ru.gdcn.polytorrent
 
+import org.slf4j.LoggerFactory
 import ru.gdcn.polytorrent.pwp.Peer
 import ru.gdcn.polytorrent.pwp.TcpConnect
 import java.io.Closeable
@@ -8,6 +9,7 @@ import java.util.concurrent.Semaphore
 
 class PeerManager(peers: Collection<Peer>) : Closeable{
 
+    private val logger = LoggerFactory.getLogger(PeerManager::class.java)
     private val peerQueue : Queue<Peer> = LinkedList()
     private val openedConnections : MutableSet<TcpConnect> = mutableSetOf()
     private val semaphore = Semaphore(TorrentConfig.MAX_PEER_CONNECTIONS)
@@ -23,6 +25,7 @@ class PeerManager(peers: Collection<Peer>) : Closeable{
             openedConnections.add(newConnection)
             newConnection.run()
         }
+        logger.warn("Пиры закончились.")
     }
 
     override fun close() {
