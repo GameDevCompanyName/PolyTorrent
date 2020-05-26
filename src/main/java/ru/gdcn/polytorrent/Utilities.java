@@ -71,6 +71,13 @@ public class Utilities {
         else return b;
     }
 
+    public static byte[] byteArrayToUnsigned(byte[] bytes) {
+        for (byte b: bytes) {
+            b = (byte) byteToUnsignedInt(b);
+        }
+        return bytes;
+    }
+
     public static byte[] byteListToPrimitive(List<Byte> byteList) {
         byte[] byteArray = new byte[byteList.size()];
         for (int i = 0; i < byteArray.length; i++) {

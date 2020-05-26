@@ -131,7 +131,6 @@ public class PeerSession {
             e.printStackTrace();
         }
         try {
-            int msgLen = 0;
             byte[] lenBytes = new byte[4];
             in.read(lenBytes, 0, 4);
             int len = Utilities.getIntFromFourBytes(lenBytes);
@@ -140,7 +139,6 @@ public class PeerSession {
             in.read(msg, 0, len);
             logger.info("Len of get bytes: " + msg.length);
             logger.info("BYTES: " + Arrays.toString(msg));
-            msgLen = msg.length;
             return msg;
         } catch (IOException e) {
             e.printStackTrace();
