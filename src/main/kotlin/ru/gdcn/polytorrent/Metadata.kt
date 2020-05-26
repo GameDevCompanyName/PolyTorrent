@@ -105,6 +105,8 @@ class Metadata(private val metafile: File) {
                 }
             }
 
+        val fullLength : Long = fileDatas.map { it.length }.sum()
+
         val name: String
             get() = dictionary["name"].toString()
 
