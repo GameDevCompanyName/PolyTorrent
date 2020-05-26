@@ -26,7 +26,7 @@ public class Peer {
     private InetAddress ip;
     private int port;
     private Byte[] peerId;
-    private Set<Long> piecesId;
+    private Set<Integer> piecesId;
 
     public void addBitfield(Bitfield bitfield) {
         Byte[] bits = bitfield.getData();
@@ -34,7 +34,7 @@ public class Peer {
             final Byte currentByte = bits[i];
             for (int j = 0; j < 8; j++) {
                 if (isBitSet(currentByte, j)) {
-                    piecesId.add(i * 8L + j);
+                    piecesId.add(i * 8 + j);
                 }
             }
         }
