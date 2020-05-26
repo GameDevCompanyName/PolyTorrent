@@ -64,7 +64,7 @@ public class FileSaver {
                 resume = true;
             }
             RandomAccessFile raf = new RandomAccessFile(persistentFile, "rw");
-            raf.setLength(metafile.getLength());
+            raf.setLength(metafile.getFullLength());
             files.add(raf);
         } else {
             if (!saveDirectory.getName().equals(metafile.getName())) {
@@ -113,10 +113,10 @@ public class FileSaver {
             Byte[] sha1 = new Byte[hash.getBytes().size()];
             sha1 = hash.getBytes().toArray(sha1);
             Piece piece = new Piece(sha1);
-            if (pieceNumber < metafile.getPieceHashes().size() - 1 && (metafile.getLength() % metafile.getPieceLength()) > 0) {
+            if (pieceNumber < metafile.getPieceHashes().size() - 1 && (metafile.getFullLength() % metafile.getPieceLength()) > 0) {
                 piece.setLength(metafile.getPieceLength());
             } else {
-                piece.setLength(metafile.getLength() % metafile.getPieceLength());
+                piece.setLength(metafile.getFullLength() % metafile.getPieceLength());
             }
             pieces.add(piece);
 
