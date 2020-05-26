@@ -1,7 +1,6 @@
 package ru.gdcn.polytorrent
 
 import com.dampcake.bencode.Bencode
-import com.dampcake.bencode.BencodeException
 import com.dampcake.bencode.Type
 import org.slf4j.LoggerFactory
 import ru.gdcn.polytorrent.torrent.FileData

@@ -83,7 +83,7 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
                         logger.info("Получили корректный ответ от одного из трекеров")
                         validTracker = future.get().second
                         val announceInfo = AnnounceInfo(responseDictionary)
-                        setTrackerAskingTimer(announceInfo.interval)
+//                        setTrackerAskingTimer(announceInfo.interval)
                         return announceInfo
                     }
                 } catch (e: BencodeException) {
