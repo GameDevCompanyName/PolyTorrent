@@ -36,13 +36,13 @@ public class FileSaver {
         return fileSaver;
     }
 
-    public synchronized boolean savePiece(int pieceIndex, List<ru.gdcn.polytorrent.pwp.message.Piece> blocks) {
+    public synchronized boolean savePiece(List<ru.gdcn.polytorrent.pwp.message.Piece> blocks) {
         boolean result = true;
         for (ru.gdcn.polytorrent.pwp.message.Piece block : blocks) {
             try {
-                saveBlock(pieceIndex, block.getOffset(), block.getBytes());
+                saveBlock(block.getPieceId(), block.getOffset(), block.getBytes());
             } catch (IOException e) {
-                logger.error("Ошибка при записи piece №" + pieceIndex, e);
+                logger.error("Ошибка при записи piece №" + block.getPieceId(), e);
             }
         }
         return result;

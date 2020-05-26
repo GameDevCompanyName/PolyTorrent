@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.concurrent.Semaphore;
 
 public class PeerSession {
     private static final Logger logger = LoggerFactory.getLogger(PeerSession.class);
@@ -16,15 +17,24 @@ public class PeerSession {
     private final Socket socket;
     private final DataInputStream in;
     private final DataOutputStream out;
+    private final Semaphore semaphore;
 
-    public PeerSession(Peer peer, Socket socket) throws IOException {
+    public PeerSession(Peer peer, Socket socket, Semaphore semaphore) throws IOException {
         this.peer = peer;
         this.socket = socket;
+        this.semaphore = semaphore;
+
         in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
         Runnable task = this::mainCycle;
         Thread thread = new Thread(task);
-        thread.start();
+        try {
+            semaphore.acquire();
+            thread.start();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            semaphore.release();
+        }
     }
 
     private void mainCycle() {
@@ -152,6 +162,8 @@ public class PeerSession {
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            semaphore.release();
         }
     }
 
