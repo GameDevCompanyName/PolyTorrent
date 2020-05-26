@@ -109,8 +109,7 @@ class Metadata(private val metafile: File) {
         val name: String
             get() = dictionary["name"].toString()
 
-        val pieceLength: Int
-            get() = dictionary["piece length"].toString().toInt()
+        val pieceLength: Int = dictionary["piece length"].toString().toInt()
 
         val pieceHashes: List<PieceHash>
             get() {
@@ -123,7 +122,7 @@ class Metadata(private val metafile: File) {
                 val list = mutableListOf<PieceHash>()
                 for (i in 0 until (byteParts.size / 20)) {
                     val currentParts = byteParts.subList(20 * i, 20 * (i + 1))
-                    list.add(PieceHash(currentParts))
+                    list.add(PieceHash(currentParts.toByteArray()))
                 }
                 return list
             }

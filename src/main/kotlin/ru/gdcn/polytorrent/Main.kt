@@ -1,6 +1,7 @@
 package ru.gdcn.polytorrent
 
 import org.slf4j.LoggerFactory
+import ru.gdcn.polytorrent.filesaver.FileSaver
 import ru.gdcn.polytorrent.pwp.SessionInfo
 import java.io.File
 import java.lang.Exception
@@ -16,7 +17,9 @@ fun main() {
     val metafile = Metadata(file)
     SessionInfo.infoHash = metafile.infoHash
     SessionInfo.ourPeerId = peerId.toTypedArray()
-
+    val saver = FileSaver.getInstance(metafile, File("."))
+    SessionInfo.fileSaver = saver
+    saver.init()
     val trackerManager = TrackerManager(metafile, peerId)
     val announceInfo: AnnounceInfo = trackerManager.getAnnounceInfo()
     println(announceInfo.complete)

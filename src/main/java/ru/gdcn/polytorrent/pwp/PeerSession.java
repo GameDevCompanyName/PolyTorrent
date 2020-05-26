@@ -75,6 +75,7 @@ public class PeerSession {
                     pieces.add(piece);
                     logger.info("Get piece with id: " + piece.getPieceId());
                 }
+                SessionInfo.fileSaver.savePiece(pieces);
                 tempPieceId = choosePiece(tempPieceId);
             }
         } catch (Exception e) {

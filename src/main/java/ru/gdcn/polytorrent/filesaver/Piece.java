@@ -22,16 +22,11 @@ public class Piece {
     @Setter
     private long length;
 
-    private final List<FilePieceMapper> filePointers;
-    private Set<PieceBlock> blocks;
+    private final List<FilePieceMapper> filePointers = new ArrayList<>();
+    private Set<PieceBlock> blocks = new TreeSet<>();
 
-    public Piece(Byte[] sha1) {
-        this.sha1 = new byte[sha1.length];
-        for (int i = 0; i < sha1.length; i++) {
-            this.sha1[i] = sha1[i];
-        }
-        this.filePointers = new ArrayList<>();
-        blocks = new TreeSet<>();
+    public Piece(byte[] sha1) {
+        this.sha1 = sha1;
     }
 
     public List<FilePieceMapper> getFilePointers() {

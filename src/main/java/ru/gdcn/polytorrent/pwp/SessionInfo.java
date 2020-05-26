@@ -1,6 +1,7 @@
 package ru.gdcn.polytorrent.pwp;
 
 import lombok.Data;
+import ru.gdcn.polytorrent.filesaver.FileSaver;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,4 +16,5 @@ public class SessionInfo {
     public static Byte[] ourPeerId;
     public static Set<Integer> receivedPieces = new HashSet<>();
     public static Set<Integer> requestedPieces = new HashSet<>();
+    public static FileSaver fileSaver;
 }

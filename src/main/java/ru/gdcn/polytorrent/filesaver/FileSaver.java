@@ -24,7 +24,7 @@ public class FileSaver {
 
     private static FileSaver fileSaver;
 
-    public FileSaver(Metadata metafile, File saveDirectory) {
+    private FileSaver(Metadata metafile, File saveDirectory) {
         this.metafile = metafile.getInfo();
         this.saveDirectory = saveDirectory;
     }
@@ -59,10 +59,10 @@ public class FileSaver {
         boolean resume = false;
 
         createPiecesList();
-
-        if (!saveDirectory.mkdirs()) {
-            throw new RuntimeException("Не удалось создать головную директорию");
-        }
+        saveDirectory.mkdirs();
+//        if (!saveDirectory.mkdirs()) {
+//            throw new RuntimeException("Не удалось создать головную директорию");
+//        }
         // создаем дерево файлов и директорий
         if (metafile.isSingleFile()) {
             File persistentFile = new File(saveDirectory, metafile.getName());
@@ -75,10 +75,11 @@ public class FileSaver {
         } else {
             if (!saveDirectory.getName().equals(metafile.getName())) {
                 saveDirectory = new File(saveDirectory, metafile.getName());
-                if (!saveDirectory.mkdir()) {
-                    logger.error("Не удалось создать директорию");
-                    throw new RuntimeException();
-                }
+//                if (!saveDirectory.mkdir()) {
+//                    logger.error("Не удалось создать директорию");
+//                    throw new RuntimeException();
+//                }
+                saveDirectory.mkdir();
             }
 
             for (FileData fileData : metafile.getFileDatas()) {
@@ -88,14 +89,11 @@ public class FileSaver {
                 for (int i = 0; i < path.size(); i++) {
                     String pathPart = path.get(i);
                     pathName.append("/").append(pathPart);
-                    if (i == path.size() - 1) {
-                        if (!new File(saveDirectory, pathName.toString()).mkdir()) {
-                            logger.error("Не удалось создать директорию");
-                            throw new RuntimeException();
-                        }
+                    if (i == path.size() - 2) {
+                        new File(saveDirectory, pathName.toString()).mkdir();
                     }
+                    System.out.println(pathName);
                 }
-
                 File persistentFile = new File(saveDirectory.getAbsolutePath() + pathName);
                 if (persistentFile.exists()) {
                     resume = true;
@@ -114,20 +112,23 @@ public class FileSaver {
     private void createPiecesList() {
         // составляем список ru.gdcn.polytorrent.Piece'ов
         long pieceNumber = 0L;
+        List<PieceHash> hashes = metafile.getPieceHashes();
+        int size = metafile.getPieceHashes().size();
 
         for (PieceHash hash : metafile.getPieceHashes()) {
-            Byte[] sha1 = new Byte[hash.getBytes().size()];
-            sha1 = hash.getBytes().toArray(sha1);
-            Piece piece = new Piece(sha1);
-            if (pieceNumber < metafile.getPieceHashes().size() - 1 && (metafile.getFullLength() % metafile.getPieceLength()) > 0) {
+            Piece piece = new Piece(hash.getBytes());
+            if (pieceNumber < size - 1 && (metafile.getFullLength() % metafile.getPieceLength()) > 0) {
+                // если не последний
                 piece.setLength(metafile.getPieceLength());
             } else {
+                // если последний
                 piece.setLength(metafile.getFullLength() % metafile.getPieceLength());
             }
             pieces.add(piece);
-
+            System.out.println(pieceNumber);
             pieceNumber++;
         }
+        System.out.println("закончилось");
     }
 
     private void mapPiecesWithFiles() throws IOException {
