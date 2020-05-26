@@ -29,8 +29,6 @@ public class FileSaver {
         this.saveDirectory = saveDirectory;
     }
 
-    private FileSaver() {}
-
     public static FileSaver getInstance(Metadata metafile, File saveDirectory) {
         if (fileSaver == null) {
             fileSaver = new FileSaver(metafile, saveDirectory);
@@ -38,14 +36,22 @@ public class FileSaver {
         return fileSaver;
     }
 
-    public synchronized void savePiece(int index, int begin, byte[] block) {
+    public synchronized boolean savePiece(int pieceIndex, List<ru.gdcn.polytorrent.pwp.message.Piece> blocks) {
+        boolean result = true;
+        for (ru.gdcn.polytorrent.pwp.message.Piece block : blocks) {
+            try {
+                saveBlock(pieceIndex, block.getOffset(), block.getBytes());
+            } catch (IOException e) {
+                logger.error("Ошибка при записи piece №" + pieceIndex, e);
+            }
+        }
+        return result;
+    }
+
+    public synchronized void saveBlock(int index, int begin, byte[] block) throws IOException {
         Piece piece = pieces.get(index);
         if (!piece.isCompleted()) {
-            try {
-                piece.write(begin, block);
-            } catch (IOException e) {
-                logger.error("Ошибка при записи piece: " + index, e);
-            }
+            piece.write(begin, block);
         }
     }
 
@@ -54,7 +60,7 @@ public class FileSaver {
 
         createPiecesList();
 
-        if(!saveDirectory.mkdirs()) {
+        if (!saveDirectory.mkdirs()) {
             throw new RuntimeException("Не удалось создать головную директорию");
         }
         // создаем дерево файлов и директорий
