@@ -3,12 +3,15 @@ package ru.gdcn.polytorrent.pwp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.gdcn.polytorrent.Utilities;
+import ru.gdcn.polytorrent.filesaver.FileSaver;
 import ru.gdcn.polytorrent.pwp.message.*;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 public class PeerSession {
@@ -64,10 +67,12 @@ public class PeerSession {
             int tempPieceId = choosePiece(-1);
             while (tempPieceId != -1) {
                 int offset = 0;
+                List<Piece> pieces = new ArrayList<>();
                 for (int i = 0; i < SessionInfo.NUM_OF_BLOCKS; i++) {
                     sendMsg(new Request(tempPieceId, offset, SessionInfo.PIECE_LEN).getBytes());
                     offset += SessionInfo.PIECE_LEN;
                     Piece piece = (Piece) packageReader.read(getMsg()).getMessage();
+                    pieces.add(piece);
                     logger.info("Get piece with id: " + piece.getPieceId());
                 }
                 tempPieceId = choosePiece(tempPieceId);
@@ -157,7 +162,6 @@ public class PeerSession {
             return msg;
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("ALERT!");
             return null;
         }
     }
@@ -172,7 +176,4 @@ public class PeerSession {
         }
     }
 
-    private byte[] readN(int len) {
-        return null;
-    }
 }
