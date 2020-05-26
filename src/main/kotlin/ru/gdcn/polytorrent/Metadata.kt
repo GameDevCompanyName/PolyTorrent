@@ -3,6 +3,7 @@ package ru.gdcn.polytorrent
 import com.dampcake.bencode.Bencode
 import com.dampcake.bencode.Type
 import org.slf4j.LoggerFactory
+import ru.gdcn.polytorrent.filesaver.Piece
 import ru.gdcn.polytorrent.torrent.FileData
 import java.io.File
 import java.io.FileInputStream
@@ -79,7 +80,7 @@ class Metadata(private val metafile: File) {
 
         val fileDatas: List<FileData>
             get() {
-                if (isSingleFile){
+                if (isSingleFile) {
                     return listOf(
                         FileData(
                             dictionary["length"].toString().toLong(),
@@ -89,7 +90,7 @@ class Metadata(private val metafile: File) {
                     )
                 } else {
                     val list = mutableListOf<FileData>()
-                    for (flex in dictionary["files"] as List<Map<String, Any>>){
+                    for (flex in dictionary["files"] as List<Map<String, Any>>) {
                         list.add(
                             FileData(
                                 flex["length"].toString().toLong(),
@@ -104,7 +105,7 @@ class Metadata(private val metafile: File) {
                 }
             }
 
-        val fullLength : Long = fileDatas.map { it.length }.sum()
+        val fullLength: Long = fileDatas.map { it.length }.sum()
 
         val name: String
             get() = dictionary["name"].toString()

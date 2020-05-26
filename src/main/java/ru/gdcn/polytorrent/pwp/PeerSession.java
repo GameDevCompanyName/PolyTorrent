@@ -73,9 +73,10 @@ public class PeerSession {
                     offset += SessionInfo.PIECE_LEN;
                     Piece piece = (Piece) packageReader.read(getMsg()).getMessage();
                     pieces.add(piece);
-                    logger.info("Get piece with id: " + piece.getPieceId());
+//                    logger.info("Get piece with id: " + piece.getPieceId());
                 }
                 SessionInfo.fileSaver.savePiece(pieces);
+                System.out.println("Download progress: " + (SessionInfo.receivedPieces.size() * 1.0 / SessionInfo.totalPieces));
                 tempPieceId = choosePiece(tempPieceId);
             }
         } catch (Exception e) {
@@ -147,7 +148,7 @@ public class PeerSession {
 
     private byte[] getMsg() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -155,11 +156,11 @@ public class PeerSession {
             byte[] lenBytes = new byte[4];
             in.read(lenBytes, 0, 4);
             int len = Utilities.getIntFromFourBytes(lenBytes);
-            logger.info("Message len: " + len);
+//            logger.info("Message len: " + len);
             byte[] msg = new byte[len];
             in.read(msg, 0, len);
-            logger.info("Len of get bytes: " + msg.length);
-            logger.info("BYTES: " + Arrays.toString(msg));
+//            logger.info("Len of get bytes: " + msg.length);
+//            logger.info("BYTES: " + Arrays.toString(msg));
             return msg;
         } catch (IOException e) {
             e.printStackTrace();
