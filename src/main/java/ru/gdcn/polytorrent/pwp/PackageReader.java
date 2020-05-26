@@ -4,10 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.gdcn.polytorrent.Utilities;
 import ru.gdcn.polytorrent.pwp.message.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,12 +16,12 @@ import static ru.gdcn.polytorrent.Utilities.getIntFromFourBytes;
 @NoArgsConstructor
 public class PackageReader {
     private static final Logger logger = LoggerFactory.getLogger(PackageReader.class);
-    private static final int HEADER_LEN = 5;
+    private final int HEADER_LEN = 5;
     private List<Message> messages;
     private Message message;
 
     public PackageReader read(byte[] bytes) {
-        switch (MessageId.getMessageId(bytes[4])) {
+        switch (MessageId.getMessageId(bytes[0])) {
             case CHOKE:
                 message = new StateMessage().choke();
                 break;
@@ -37,16 +35,16 @@ public class PackageReader {
                 message = new StateMessage().notInterested();
                 break;
             case HAVE:
-                readHaveMsg(bytes, 0, bytes.length);
+                message = readHaveMsg(bytes, 1, bytes.length);
                 break;
             case BITFIELD:
-                readBitfieldMsg(bytes, 0, bytes.length);
+                message = readBitfieldMsg(bytes, 1, bytes.length);
                 break;
             case REQUEST:
-                readRequestMsg(bytes, 0, bytes.length);
+                message = readRequestMsg(bytes, 1, bytes.length);
                 break;
             case PIECE:
-                readPieceMsg(bytes, 0, bytes.length);
+                message = readPieceMsg(bytes, 1, bytes.length);
                 break;
             default:
                 logger.info("Read unknown message");

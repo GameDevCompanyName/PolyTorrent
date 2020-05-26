@@ -1,6 +1,7 @@
 package ru.gdcn.polytorrent.pwp.message;
 
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 import ru.gdcn.polytorrent.Utilities;
 
 import java.util.ArrayList;
@@ -11,11 +12,11 @@ import java.util.List;
 public class Request implements Message{
     private static final int LENGTH = 13;
     private MessageId messageId;
-    private int pieceId;
+    private Integer pieceId;
     private int offset;
     private int pieceLen;
 
-    public Request(int pieceId, int offset, int pieceLen) {
+    public Request(@NotNull Integer pieceId, int offset, int pieceLen) {
         messageId = MessageId.REQUEST;
         this.pieceId = pieceId;
         this.offset = offset;
