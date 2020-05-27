@@ -131,7 +131,8 @@ public class PeerSession {
                 in.readFully(handshake);
                 return handshake;
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                logger.error("EOFException!");
                 return null;
             }
         }

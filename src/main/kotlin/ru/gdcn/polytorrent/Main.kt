@@ -15,9 +15,9 @@ fun main() {
     LogManager.getRootLogger().level = TorrentConfig.LOGGING_LEVEL
 
     val peerId = Random.nextBytes(20)
-    val file = File("torrents/ubuntu12.torrent")
+    val file = File("torrents/ubuntu20.torrent")
     val metafile = Metadata(file)
-    println(metafile.info.pieceHashes.size)
+//    println(metafile.info.pieceHashes.size)
     SessionInfo.infoHash = metafile.infoHash
     SessionInfo.ourPeerId = peerId.toTypedArray()
     SessionInfo.NUM_OF_BLOCKS = metafile.blockQuantity.toInt()
@@ -25,9 +25,9 @@ fun main() {
 
     val trackerManager = TrackerManager(metafile, peerId)
     val announceInfo: AnnounceInfo = trackerManager.getAnnounceInfo()
-    println(announceInfo.complete)
-    println(announceInfo.incomplete)
-    println(announceInfo.interval)
+//    println(announceInfo.complete)
+//    println(announceInfo.incomplete)
+//    println(announceInfo.interval)
     println("Найдено пиров:" + announceInfo.peers.size)
 
     val saver = FileSaver.getInstance(metafile, File("."))
