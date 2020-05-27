@@ -10,8 +10,9 @@ import java.util.Set;
 public class SessionInfo {
     public static final int NUM_OF_PEERS = 5;
     public static final int PIECE_LEN = 16384;
+    public static final int REQUESTED_BLOCKS = 5;
     public static Integer totalPieces;
-    public static Long NUM_OF_BLOCKS;
+    public static int NUM_OF_BLOCKS;
     public static Set<Peer> peers;
     public static Byte[] infoHash;
     public static Byte[] ourPeerId;

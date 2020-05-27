@@ -28,6 +28,7 @@ public class Handshake implements Message {
     }
 
     public boolean isHandshakeResponse(byte[] bytes, Byte[] infoHash, Byte[] peerId) {
+        if (bytes == null) return false;
         if (bytes[0] != (byte) PSTRLEN) { //TODO NullPointer
             logger.error("Wrong pstrlen");
             return false;

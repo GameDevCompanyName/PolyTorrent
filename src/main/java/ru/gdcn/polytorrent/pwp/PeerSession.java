@@ -43,7 +43,6 @@ public class PeerSession {
         logger.info("In main cycle");
         if (!handshake()) {
             logger.error("Wrong handshake answer");
-            System.out.println("Wrong handshake answer");
             closeSocket();
             return;
         }
@@ -66,18 +65,31 @@ public class PeerSession {
         int tempPieceId = choosePiece(-1);
         while (tempPieceId != -1) {
             int offset = 0;
+            int receivedBlocks = 0;
             List<Piece> pieces = new ArrayList<>();
-            for (int i = 0; i < SessionInfo.NUM_OF_BLOCKS; i++) {
-                sendMsg(new Request(tempPieceId, offset, SessionInfo.PIECE_LEN).getBytes());
-                offset += SessionInfo.PIECE_LEN;
-                Piece piece = (Piece) packageReader.read(getMsg()).getMessage();
-                pieces.add(piece);
-//                logger.info("Get piece with id: " + piece.getPieceId());
-//                System.out.println("Get piece: " + piece.getPieceId() + " offset: " + Integer.toHexString(piece.getOffset()));
+            while (receivedBlocks < SessionInfo.NUM_OF_BLOCKS) {
+                int num = SessionInfo.REQUESTED_BLOCKS;
+                if(receivedBlocks > SessionInfo.NUM_OF_BLOCKS - SessionInfo.REQUESTED_BLOCKS) {
+                    num = SessionInfo.NUM_OF_BLOCKS - receivedBlocks;
+                }
+                for (int i = 0; i < num; i++) {
+                    sendMsg(new Request(tempPieceId, offset, SessionInfo.PIECE_LEN).getBytes());
+                    offset += SessionInfo.PIECE_LEN;
+                }
+                for (int i = 0; i < num; i++) {
+                    Piece piece = (Piece) packageReader.read(getMsg()).getMessage();
+                    pieces.add(piece);
+//                    logger.warn("Get piece with id: " + piece.getPieceId() + " offset: " + piece.getOffset());
+                }
+                receivedBlocks += SessionInfo.REQUESTED_BLOCKS;
             }
-            SessionInfo.fileSaver.savePiece(pieces);
+            if (SessionInfo.fileSaver.savePiece(pieces)){
                 System.out.println("Download progress: " + (SessionInfo.receivedPieces.size() * 1.0 / SessionInfo.totalPieces));
-            tempPieceId = choosePiece(tempPieceId);
+                tempPieceId = choosePiece(tempPieceId);
+            } else {
+                logger.error("Wrong hashsum!");
+                tempPieceId = choosePiece(-1);
+            }
         }
         closeSocket();
     }
@@ -111,13 +123,15 @@ public class PeerSession {
 
 
     private byte[] getHandshakeMsg() {
-        try {
-            byte[] handshake = new byte[68];
-            in.readFully(handshake);
-            return handshake;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+        while (true) {
+            try {
+                byte[] handshake = new byte[68];
+                in.readFully(handshake);
+                return handshake;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 
@@ -136,9 +150,8 @@ public class PeerSession {
     }
 
     private byte[] getMsg() {
-        int len = 0;
         try {
-            len = in.readInt();
+            int len = in.readInt();
             byte[] msg = new byte[len];
             in.readFully(msg);
             return msg;
