@@ -2,7 +2,9 @@ package ru.gdcn.polytorrent.pwp;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import ru.gdcn.polytorrent.ProgressManager;
 import ru.gdcn.polytorrent.Utilities;
+import ru.gdcn.polytorrent.filesaver.FileSaver;
 import ru.gdcn.polytorrent.pwp.message.*;
 
 import java.io.*;

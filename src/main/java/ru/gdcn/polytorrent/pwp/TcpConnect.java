@@ -25,7 +25,8 @@ public class TcpConnect implements Closeable {
             logger.info("Tcp connected");
             new PeerSession(peer, socket, semaphore);
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            logger.error("Ошибка открытия сокета");
             semaphore.release();
         }
     }

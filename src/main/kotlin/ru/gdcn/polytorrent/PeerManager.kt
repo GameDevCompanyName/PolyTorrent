@@ -19,6 +19,7 @@ class PeerManager(peers: Collection<Peer>) : Closeable{
     }
 
     fun start(){
+        ProgressManager.startTimeMillis = System.currentTimeMillis()
         while (peerQueue.isNotEmpty()){
             val nextPeer = peerQueue.poll()
             val newConnection = TcpConnect(nextPeer, semaphore)
