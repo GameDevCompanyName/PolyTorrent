@@ -86,7 +86,7 @@ public class PeerSession {
                 receivedBlocks += SessionInfo.REQUESTED_BLOCKS;
             }
             if (SessionInfo.fileSaver.savePiece(pieces)){
-                System.out.println("Download progress: " + (SessionInfo.receivedPieces.size() * 1.0 / SessionInfo.totalPieces));
+                ProgressManager.progress(SessionInfo.receivedPieces.size() * 1.0 / SessionInfo.totalPieces);
                 tempPieceId = choosePiece(tempPieceId);
             } else {
                 logger.error("Wrong hashsum!");
