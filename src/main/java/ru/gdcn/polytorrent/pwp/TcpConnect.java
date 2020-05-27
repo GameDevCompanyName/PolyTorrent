@@ -1,7 +1,7 @@
 package ru.gdcn.polytorrent.pwp;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
@@ -21,7 +21,7 @@ public class TcpConnect implements Closeable {
 
     public void run() throws IOException {
         try {
-            socket = new Socket(peer.getIp(), peer.getPort());
+            socket = new Socket(peer.getIp(), peer.getPort()); //TODO ConnectionTimeout
             logger.info("Tcp connected");
             new PeerSession(peer, socket, semaphore);
         } catch (IOException e) {

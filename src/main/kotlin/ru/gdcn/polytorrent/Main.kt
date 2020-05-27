@@ -1,5 +1,7 @@
 package ru.gdcn.polytorrent
 
+import org.apache.log4j.BasicConfigurator
+import org.apache.log4j.LogManager
 import ru.gdcn.polytorrent.filesaver.FileSaver
 import ru.gdcn.polytorrent.pwp.SessionInfo
 import java.io.File
@@ -8,6 +10,9 @@ import kotlin.random.Random
 
 
 fun main() {
+
+    BasicConfigurator.configure()
+    LogManager.getRootLogger().level = TorrentConfig.LOGGING_LEVEL
 
     val peerId = Random.nextBytes(20)
     val file = File("torrents/ubuntu20.torrent")

@@ -1,6 +1,6 @@
 package ru.gdcn.polytorrent
 
-import org.apache.logging.log4j.LogManager
+import org.apache.log4j.LogManager
 import ru.gdcn.polytorrent.pwp.Peer
 import ru.gdcn.polytorrent.pwp.TcpConnect
 import java.io.Closeable

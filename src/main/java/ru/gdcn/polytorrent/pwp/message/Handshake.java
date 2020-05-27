@@ -1,8 +1,8 @@
 package ru.gdcn.polytorrent.pwp.message;
 
 import lombok.Data;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import ru.gdcn.polytorrent.Utilities;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class Handshake implements Message {
     }
 
     public boolean isHandshakeResponse(byte[] bytes, Byte[] infoHash, Byte[] peerId) {
-        if (bytes[0] != (byte) PSTRLEN) {
+        if (bytes[0] != (byte) PSTRLEN) { //TODO NullPointer
             logger.error("Wrong pstrlen");
             return false;
         } else if (!Arrays.equals(Arrays.copyOfRange(bytes, 1, 20), PSTR.getBytes())) {

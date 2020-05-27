@@ -1,7 +1,7 @@
 package ru.gdcn.polytorrent.pwp;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import ru.gdcn.polytorrent.Utilities;
 import ru.gdcn.polytorrent.filesaver.FileSaver;
 import ru.gdcn.polytorrent.pwp.message.*;
@@ -71,7 +71,7 @@ public class PeerSession {
                 for (int i = 0; i < SessionInfo.NUM_OF_BLOCKS; i++) {
                     sendMsg(new Request(tempPieceId, offset, SessionInfo.PIECE_LEN).getBytes());
                     offset += SessionInfo.PIECE_LEN;
-                    Piece piece = (Piece) packageReader.read(getMsg()).getMessage();
+                    Piece piece = (Piece) packageReader.read(getMsg()).getMessage(); //TODO ClassCastException
                     pieces.add(piece);
 //                    logger.info("Get piece with id: " + piece.getPieceId());
                 }
@@ -148,16 +148,16 @@ public class PeerSession {
 
     private byte[] getMsg() {
         try {
-            Thread.sleep(1500);
+            Thread.sleep(1500); //TODO Избавиться
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         try {
             byte[] lenBytes = new byte[4];
-            in.read(lenBytes, 0, 4);
+            in.read(lenBytes, 0, 4); //TODO SocketException
             int len = Utilities.getIntFromFourBytes(lenBytes);
 //            logger.info("Message len: " + len);
-            byte[] msg = new byte[len];
+            byte[] msg = new byte[len]; //TODO JavaHeap
             in.read(msg, 0, len);
 //            logger.info("Len of get bytes: " + msg.length);
 //            logger.info("BYTES: " + Arrays.toString(msg));

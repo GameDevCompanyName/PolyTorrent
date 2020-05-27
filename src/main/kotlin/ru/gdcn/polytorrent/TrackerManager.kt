@@ -5,7 +5,7 @@ import com.dampcake.bencode.BencodeException
 import com.dampcake.bencode.Type
 import khttp.*
 import khttp.responses.Response
-import org.apache.logging.log4j.LogManager
+import org.apache.log4j.LogManager
 import ru.gdcn.polytorrent.Utilities.byteArrayToURLString
 import java.io.Closeable
 import java.net.ConnectException
