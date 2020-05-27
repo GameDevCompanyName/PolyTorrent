@@ -2,8 +2,8 @@ package ru.gdcn.polytorrent.pwp;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import ru.gdcn.polytorrent.pwp.message.*;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class PackageReader {
     private Message message;
 
     public PackageReader read(byte[] bytes) {
-        switch (MessageId.getMessageId(bytes[0])) {
+        switch (MessageId.getMessageId(bytes[0])) { //TODO NullPointer
             case CHOKE:
                 message = new StateMessage().choke();
                 break;

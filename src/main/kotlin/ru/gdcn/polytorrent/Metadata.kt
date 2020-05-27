@@ -2,8 +2,7 @@ package ru.gdcn.polytorrent
 
 import com.dampcake.bencode.Bencode
 import com.dampcake.bencode.Type
-import org.apache.logging.log4j.LogManager
-import ru.gdcn.polytorrent.filesaver.Piece
+import org.apache.log4j.LogManager
 import ru.gdcn.polytorrent.torrent.FileData
 import java.io.File
 import java.io.FileInputStream

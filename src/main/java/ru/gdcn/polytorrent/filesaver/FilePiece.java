@@ -2,8 +2,8 @@ package ru.gdcn.polytorrent.filesaver;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.EOFException;
@@ -13,8 +13,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-public class Piece {
-    private static final Logger logger = LogManager.getLogger(Piece.class);
+public class FilePiece {
+    private static final Logger logger = LogManager.getLogger(FilePiece.class);
 
     private final byte[] sha1;
 
@@ -25,7 +25,7 @@ public class Piece {
     private final List<FilePieceMapper> filePointers = new ArrayList<>();
     private Set<PieceBlock> blocks = new TreeSet<>();
 
-    public Piece(byte[] sha1) {
+    public FilePiece(byte[] sha1) {
         this.sha1 = sha1;
     }
 

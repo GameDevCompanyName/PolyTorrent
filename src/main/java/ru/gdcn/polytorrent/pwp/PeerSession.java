@@ -1,7 +1,7 @@
 package ru.gdcn.polytorrent.pwp;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import ru.gdcn.polytorrent.Utilities;
 import ru.gdcn.polytorrent.pwp.message.*;
 

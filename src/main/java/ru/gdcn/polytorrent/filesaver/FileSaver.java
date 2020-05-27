@@ -1,7 +1,7 @@
 package ru.gdcn.polytorrent.filesaver;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import ru.gdcn.polytorrent.Metadata;
 import ru.gdcn.polytorrent.PieceHash;
 import ru.gdcn.polytorrent.torrent.FileData;
@@ -18,7 +18,7 @@ public class FileSaver {
     private static final Logger logger = LogManager.getLogger(FileSaver.class);
 
     Metadata.Metainfo metafile;
-    private final List<Piece> pieces = new ArrayList<>();
+    private final List<FilePiece> pieces = new ArrayList<>();
     List<RandomAccessFile> files = new LinkedList<>();
     File saveDirectory;
 
@@ -49,7 +49,7 @@ public class FileSaver {
     }
 
     public synchronized void saveBlock(int index, int begin, byte[] block) throws IOException {
-        Piece piece = pieces.get(index);
+        FilePiece piece = pieces.get(index);
         if (!piece.isCompleted()) {
             piece.write(begin, block);
         }
@@ -92,7 +92,7 @@ public class FileSaver {
                     if (i == path.size() - 2) {
                         new File(saveDirectory, pathName.toString()).mkdir();
                     }
-                    System.out.println(pathName);
+//                    System.out.println(pathName);
                 }
                 File persistentFile = new File(saveDirectory.getAbsolutePath() + pathName);
                 if (persistentFile.exists()) {
@@ -116,7 +116,7 @@ public class FileSaver {
         int size = metafile.getPieceHashes().size();
         long fraction = metafile.getFullLength() % metafile.getPieceLength();
         for (PieceHash hash : metafile.getPieceHashes()) {
-            Piece piece = new Piece(hash.getBytes());
+            FilePiece piece = new FilePiece(hash.getBytes());
             if ((pieceNumber < size - 1 && fraction > 0)
                     || fraction == 0) {
                 // если не последний
@@ -126,22 +126,22 @@ public class FileSaver {
                 piece.setLength(metafile.getFullLength() % metafile.getPieceLength());
             }
             pieces.add(piece);
-            System.out.println(pieceNumber);
+//            System.out.println(pieceNumber);
             pieceNumber++;
         }
-        System.out.println("закончилось");
+//        System.out.println("закончилось");
     }
 
     private void mapPiecesWithFiles() throws IOException {
     /* Сопоставляем pieces и файлы (учитываем, что один пис может содержать
     данные из разных файлов*/
         Iterator<RandomAccessFile> fileIterator = files.iterator();
-        Iterator<Piece> pieceIterator = pieces.iterator();
+        Iterator<FilePiece> pieceIterator = pieces.iterator();
 
         long fileOffset = 0L;
         long pieceOffset = 0L;
 
-        Piece piece = pieceIterator.next();
+        FilePiece piece = pieceIterator.next();
         RandomAccessFile file = fileIterator.next();
 
         while (piece != null && file != null) {
@@ -151,7 +151,7 @@ public class FileSaver {
             long pieceFreeBytes = piece.getLength() - pieceOffset;
             long fileMissingBytes = file.length() - fileOffset;
 
-            // если ru.gdcn.polytorrent.Piece часть одного файла - обновляем оффсет файла, берем новый ru.gdcn.polytorrent.Piece
+            // если Piece часть одного файла - обновляем оффсет файла, берем новый ru.gdcn.polytorrent.Piece
             if (pieceFreeBytes < fileMissingBytes) {
                 fileOffset += pieceFreeBytes;
                 if (pieceIterator.hasNext()) {
@@ -160,7 +160,7 @@ public class FileSaver {
                     piece = null;
                 }
                 pieceOffset = 0L;
-                // если ru.gdcn.polytorrent.Piece часть двух файлов - обновляем оффсет ru.gdcn.polytorrent.Piece, берем новый файл
+                // если Piece часть двух файлов - обновляем оффсет ru.gdcn.polytorrent.Piece, берем новый файл
             } else if (pieceFreeBytes > fileMissingBytes) {
                 pieceOffset += fileMissingBytes;
                 if (fileIterator.hasNext()) {
@@ -170,7 +170,7 @@ public class FileSaver {
                 }
                 fileOffset = 0L;
                 logger.info("Найден piece который содержит куски разных файлов");
-                // если ru.gdcn.polytorrent.Piece ровно ложится на конец файла, берем новый ru.gdcn.polytorrent.Piece и файл, обнуляем оффсеты
+                // если Piece ровно ложится на конец файла, берем новый ru.gdcn.polytorrent.Piece и файл, обнуляем оффсеты
             } else {
                 fileOffset = 0L;
                 pieceOffset = 0L;
