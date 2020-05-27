@@ -5,7 +5,7 @@ import com.dampcake.bencode.BencodeException
 import com.dampcake.bencode.Type
 import khttp.*
 import khttp.responses.Response
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import ru.gdcn.polytorrent.Utilities.byteArrayToURLString
 import java.io.Closeable
 import java.net.ConnectException
@@ -22,7 +22,7 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
     private val trackerList: MutableList<String> = mutableListOf()
     private var validTracker: String? = null
     private var timer: Timer? = null
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    private val logger = LogManager.getLogger(this::class.java)
 
     init {
         if (metafile.announceList.isEmpty()) {

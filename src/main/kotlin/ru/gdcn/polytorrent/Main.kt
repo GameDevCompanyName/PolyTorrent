@@ -1,6 +1,5 @@
 package ru.gdcn.polytorrent
 
-import org.slf4j.LoggerFactory
 import ru.gdcn.polytorrent.filesaver.FileSaver
 import ru.gdcn.polytorrent.pwp.SessionInfo
 import java.io.File

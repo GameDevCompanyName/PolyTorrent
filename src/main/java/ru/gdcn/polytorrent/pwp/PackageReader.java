@@ -2,8 +2,8 @@ package ru.gdcn.polytorrent.pwp;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.gdcn.polytorrent.pwp.message.*;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import static ru.gdcn.polytorrent.Utilities.getIntFromFourBytes;
 @Data
 @NoArgsConstructor
 public class PackageReader {
-    private static final Logger logger = LoggerFactory.getLogger(PackageReader.class);
+    private static final Logger logger = LogManager.getLogger(PackageReader.class);
     private final int HEADER_LEN = 5;
     private List<Message> messages;
     private Message message;

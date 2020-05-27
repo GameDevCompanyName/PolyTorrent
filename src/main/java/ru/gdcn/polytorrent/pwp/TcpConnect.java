@@ -1,7 +1,7 @@
 package ru.gdcn.polytorrent.pwp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 public class TcpConnect implements Closeable {
-    private static final Logger logger = LoggerFactory.getLogger(TcpConnect.class);
+    private static final Logger logger = LogManager.getLogger(TcpConnect.class);
     private Socket socket;
     private Peer peer;
     private Semaphore semaphore;

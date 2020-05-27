@@ -1,7 +1,7 @@
 package ru.gdcn.polytorrent.pwp;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.gdcn.polytorrent.Utilities;
 import ru.gdcn.polytorrent.filesaver.FileSaver;
 import ru.gdcn.polytorrent.pwp.message.*;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 public class PeerSession {
-    private static final Logger logger = LoggerFactory.getLogger(PeerSession.class);
+    private static final Logger logger = LogManager.getLogger(PeerSession.class);
     private final Peer peer;
     private final Socket socket;
     private final DataInputStream in;

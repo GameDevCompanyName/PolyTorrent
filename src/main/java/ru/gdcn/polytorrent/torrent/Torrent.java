@@ -1,8 +1,8 @@
 package ru.gdcn.polytorrent.torrent;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.gdcn.polytorrent.AnnounceInfo;
 import ru.gdcn.polytorrent.Metadata;
 import ru.gdcn.polytorrent.TrackerManager;
@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class Torrent {
     private static final int PORT = 6881;
-    private static final Logger logger = LoggerFactory.getLogger(Torrent.class);
+    private static final Logger logger = LogManager.getLogger(Torrent.class);
 
     public static void main(String[] args) {
 

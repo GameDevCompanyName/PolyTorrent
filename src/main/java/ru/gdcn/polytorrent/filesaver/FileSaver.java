@@ -1,7 +1,7 @@
 package ru.gdcn.polytorrent.filesaver;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.gdcn.polytorrent.Metadata;
 import ru.gdcn.polytorrent.PieceHash;
 import ru.gdcn.polytorrent.torrent.FileData;
@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class FileSaver {
-    private static final Logger logger = LoggerFactory.getLogger(FileSaver.class);
+    private static final Logger logger = LogManager.getLogger(FileSaver.class);
 
     Metadata.Metainfo metafile;
     private final List<Piece> pieces = new ArrayList<>();

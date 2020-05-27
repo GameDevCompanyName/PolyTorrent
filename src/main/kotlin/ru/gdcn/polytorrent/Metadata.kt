@@ -2,7 +2,7 @@ package ru.gdcn.polytorrent
 
 import com.dampcake.bencode.Bencode
 import com.dampcake.bencode.Type
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import ru.gdcn.polytorrent.filesaver.Piece
 import ru.gdcn.polytorrent.torrent.FileData
 import java.io.File
@@ -13,7 +13,7 @@ class Metadata(private val metafile: File) {
 
     val BLOCK_SIZE = 16384
     private var dictionary: Map<String, Any>
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    private val logger = LogManager.getLogger(this::class.java)
 
     init {
         logger.info("Пытаюсь распарсить метафайл")

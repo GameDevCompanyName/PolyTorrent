@@ -1,8 +1,8 @@
 package ru.gdcn.polytorrent.pwp.message;
 
 import lombok.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.gdcn.polytorrent.Utilities;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import static ru.gdcn.polytorrent.Utilities.*;
 
 @Data
 public class Handshake implements Message {
-    private final Logger logger = LoggerFactory.getLogger(Handshake.class);
+    private final Logger logger = LogManager.getLogger(Handshake.class);
     private final int PSTRLEN = 19;
     private final String PSTR = "BitTorrent protocol";
     private final byte[] RESERVED = {0, 0, 0, 0, 0, 0, 0, 0};
