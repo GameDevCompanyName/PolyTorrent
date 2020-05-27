@@ -6,7 +6,7 @@ object TorrentConfig {
 
     const val USE_DEFAULT_TRACKERS = true
     const val MAX_PEER_CONNECTIONS = 20
-    val LOGGING_LEVEL = Level.WARN
+    val LOGGING_LEVEL = Level.OFF
     const val TRACKER_ASKING_THREADS = 8
     val DEFAULT_TORRENTS = listOf(
         "http://tracker.thepiratebay.org/announce",
