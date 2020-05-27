@@ -2,6 +2,7 @@ package ru.gdcn.polytorrent.pwp;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import ru.gdcn.polytorrent.ProgressManager;
 import ru.gdcn.polytorrent.Utilities;
 import ru.gdcn.polytorrent.filesaver.FileSaver;
 import ru.gdcn.polytorrent.pwp.message.*;
@@ -76,7 +77,7 @@ public class PeerSession {
 //                    logger.info("Get piece with id: " + piece.getPieceId());
                 }
                 SessionInfo.fileSaver.savePiece(pieces);
-                System.out.println("Download progress: " + (SessionInfo.receivedPieces.size() * 1.0 / SessionInfo.totalPieces));
+                ProgressManager.progress(SessionInfo.receivedPieces.size() * 100.0 / SessionInfo.totalPieces);
                 tempPieceId = choosePiece(tempPieceId);
             }
         } catch (Exception e) {

@@ -28,7 +28,7 @@ fun main() {
     println(announceInfo.complete)
     println(announceInfo.incomplete)
     println(announceInfo.interval)
-    println(announceInfo.peers.joinToString("\n"))
+    println("Найдено пиров:" + announceInfo.peers.size)
 
     val saver = FileSaver.getInstance(metafile, File("."))
     SessionInfo.fileSaver = saver

@@ -9,6 +9,7 @@ import org.apache.log4j.LogManager
 import ru.gdcn.polytorrent.Utilities.byteArrayToURLString
 import java.io.Closeable
 import java.net.ConnectException
+import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.*
@@ -31,14 +32,17 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
         } else {
             logger.info("Добавление трекеров из аннонс-листа в очередь опроса")
             trackerList.addAll(metafile.announceList)
-            trackerList.shuffle()
         }
+        if (TorrentConfig.USE_DEFAULT_TRACKERS){
+            trackerList.addAll(TorrentConfig.DEFAULT_TORRENTS)
+        }
+        trackerList.shuffle()
     }
 
     fun getAnnounceInfo(): AnnounceInfo {
         val futures = mutableListOf<Future<Pair<Optional<Response>, String>>>()
         logger.info("Создание пула экзекьюторов (аеее)")
-        val executorService = Executors.newFixedThreadPool(4)
+        val executorService = Executors.newFixedThreadPool(TorrentConfig.TRACKER_ASKING_THREADS)
 
         logger.info("Идём по списку трекеров")
         for (tracker in trackerList) {
@@ -68,6 +72,7 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
 //        val dictionaries = mutableListOf<MutableMap<String, Any>>()
         //А теперь точно всё выполнилось и проверяем чё получили
         logger.info("Проходимся по полученным ответам")
+        var resultAnnounceInfo : AnnounceInfo? = null
         for (future in futures) {
             if (future.get().first.isEmpty) {
                 continue
@@ -89,18 +94,32 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
                             logger.error("Не смог распарсить ответ от трекера")
                             continue
                         }
+                        if (announceInfo.peers.isEmpty()){
+                            continue
+                        }
+                        if (resultAnnounceInfo == null){
+                            resultAnnounceInfo = announceInfo
+                        } else {
+                            resultAnnounceInfo.peers.addAll(announceInfo.peers)
+                        }
 //                        setTrackerAskingTimer(announceInfo.interval)
-                        return announceInfo
                     }
                 } catch (e: BencodeException) {
                     logger.error("Не удалось распарсить ответ от трекера")
                     //Не удалось распарсить ответ
                     continue
+                } catch (e: java.lang.IllegalStateException) {
+                    logger.error("Неправильный формат сообщения от трекера")
+                    continue
                 }
             }
         }
 
-        throw IllegalStateException("Не удалось получить информацию об анонсах")
+        if (resultAnnounceInfo == null){
+            throw IllegalStateException("Не удалось получить информацию об анонсах")
+        } else {
+            return resultAnnounceInfo
+        }
     }
 
     private fun setTrackerAskingTimer(interval: Int) {
@@ -148,6 +167,9 @@ class TrackerManager(private val metafile: Metadata, private val peerId: ByteArr
             Optional.empty()
         } catch (e: ConnectException) {
             logger.error("Ошибка подключения")
+            Optional.empty()
+        } catch (e: SocketException) {
+            logger.error("Сеть трекера недоступна")
             Optional.empty()
         }
     }
