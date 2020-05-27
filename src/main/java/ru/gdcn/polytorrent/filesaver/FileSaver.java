@@ -37,15 +37,15 @@ public class FileSaver {
     }
 
     public synchronized boolean savePiece(List<ru.gdcn.polytorrent.pwp.message.Piece> blocks) {
-        boolean result = true;
         for (ru.gdcn.polytorrent.pwp.message.Piece block : blocks) {
             try {
                 saveBlock(block.getPieceId(), block.getOffset(), block.getBytes());
             } catch (IOException e) {
                 logger.error("Ошибка при записи piece №" + block.getPieceId(), e);
+                return false;
             }
         }
-        return result;
+        return true;
     }
 
     public synchronized void saveBlock(int index, int begin, byte[] block) throws IOException {

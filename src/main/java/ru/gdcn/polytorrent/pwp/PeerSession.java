@@ -42,50 +42,46 @@ public class PeerSession {
     }
 
     private void mainCycle() {
-        try {
-            logger.info("In main cycle");
-            if (!handshake()) {
-                logger.error("Wrong handshake answer");
-                closeSocket();
-                return;
-            }
-            logger.info("Handshake done");
-            PackageReader packageReader = new PackageReader().read(getMsg());
-
-            getPieceInfo(packageReader);
-            logger.info("Get bitfield");
-
-            sendMsg(new StateMessage().interested().getBytes());
-            logger.info("Send interested message");
-
-            if (!getUnckoke(packageReader.read(getMsg()))) {
-                logger.error("No unchoke answer");
-                closeSocket();
-                return;
-            }
-            logger.info("Get unchoke");
-
-            int tempPieceId = choosePiece(-1);
-            while (tempPieceId != -1) {
-                int offset = 0;
-                List<Piece> pieces = new ArrayList<>();
-                for (int i = 0; i < SessionInfo.NUM_OF_BLOCKS; i++) {
-                    sendMsg(new Request(tempPieceId, offset, SessionInfo.PIECE_LEN).getBytes());
-                    offset += SessionInfo.PIECE_LEN;
-                    Piece piece = (Piece) packageReader.read(getMsg()).getMessage(); //TODO ClassCastException
-                    pieces.add(piece);
-//                    logger.info("Get piece with id: " + piece.getPieceId());
-                }
-                SessionInfo.fileSaver.savePiece(pieces);
-                ProgressManager.progress(SessionInfo.receivedPieces.size() * 100.0 / SessionInfo.totalPieces);
-                tempPieceId = choosePiece(tempPieceId);
-            }
-        } catch (Exception e) {
-            logger.error("Исключение в главном цикле", e);
-        } finally {
+        logger.info("In main cycle");
+        if (!handshake()) {
+            logger.error("Wrong handshake answer");
+            System.out.println("Wrong handshake answer");
             closeSocket();
+            return;
         }
-        return;
+        logger.info("Handshake done");
+        PackageReader packageReader = new PackageReader().read(getMsg());
+
+        getPieceInfo(packageReader);
+        logger.info("Get bitfield");
+
+        sendMsg(new StateMessage().interested().getBytes());
+        logger.info("Send interested message");
+
+        if (!getUnckoke(packageReader.read(getMsg()))) {
+            logger.error("No unchoke answer");
+            closeSocket();
+            return;
+        }
+        logger.info("Get unchoke");
+
+        int tempPieceId = choosePiece(-1);
+        while (tempPieceId != -1) {
+            int offset = 0;
+            List<Piece> pieces = new ArrayList<>();
+            for (int i = 0; i < SessionInfo.NUM_OF_BLOCKS; i++) {
+                sendMsg(new Request(tempPieceId, offset, SessionInfo.PIECE_LEN).getBytes());
+                offset += SessionInfo.PIECE_LEN;
+                Piece piece = (Piece) packageReader.read(getMsg()).getMessage();
+                pieces.add(piece);
+//                logger.info("Get piece with id: " + piece.getPieceId());
+//                System.out.println("Get piece: " + piece.getPieceId() + " offset: " + Integer.toHexString(piece.getOffset()));
+            }
+            SessionInfo.fileSaver.savePiece(pieces);
+                System.out.println("Download progress: " + (SessionInfo.receivedPieces.size() * 1.0 / SessionInfo.totalPieces));
+            tempPieceId = choosePiece(tempPieceId);
+        }
+        closeSocket();
     }
 
     private synchronized int choosePiece(int prevId) {
@@ -97,10 +93,7 @@ public class PeerSession {
         Iterator<Integer> iterator = peer.getPiecesId().iterator();
         while (iterator.hasNext()) {
             int id = iterator.next();
-            if (SessionInfo.receivedPieces.contains(id) || SessionInfo.requestedPieces.contains(id)) {
-//                peer.getPiecesId().remove(id);
-                continue;
-            } else {
+            if (!SessionInfo.receivedPieces.contains(id) && !SessionInfo.requestedPieces.contains(id)) {
                 SessionInfo.requestedPieces.add(id);
                 return id;
             }
@@ -121,12 +114,9 @@ public class PeerSession {
 
     private byte[] getHandshakeMsg() {
         try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
-            return in.readNBytes(68);
+            byte[] handshake = new byte[68];
+            in.readFully(handshake);
+            return handshake;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -148,25 +138,16 @@ public class PeerSession {
     }
 
     private byte[] getMsg() {
+        int len = 0;
         try {
-            Thread.sleep(1500); //TODO Избавиться
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
-            byte[] lenBytes = new byte[4];
-            in.read(lenBytes, 0, 4); //TODO SocketException
-            int len = Utilities.getIntFromFourBytes(lenBytes);
-//            logger.info("Message len: " + len);
-            byte[] msg = new byte[len]; //TODO JavaHeap
-            in.read(msg, 0, len);
-//            logger.info("Len of get bytes: " + msg.length);
-//            logger.info("BYTES: " + Arrays.toString(msg));
+            len = in.readInt();
+            byte[] msg = new byte[len];
+            in.readFully(msg);
             return msg;
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     private void closeSocket() {
