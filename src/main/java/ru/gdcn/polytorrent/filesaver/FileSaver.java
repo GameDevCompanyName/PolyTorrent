@@ -114,10 +114,11 @@ public class FileSaver {
         long pieceNumber = 0L;
         List<PieceHash> hashes = metafile.getPieceHashes();
         int size = metafile.getPieceHashes().size();
-
+        long fraction = metafile.getFullLength() % metafile.getPieceLength();
         for (PieceHash hash : metafile.getPieceHashes()) {
             Piece piece = new Piece(hash.getBytes());
-            if (pieceNumber < size - 1 && (metafile.getFullLength() % metafile.getPieceLength()) > 0) {
+            if ((pieceNumber < size - 1 && fraction > 0)
+                    || fraction == 0) {
                 // если не последний
                 piece.setLength(metafile.getPieceLength());
             } else {

@@ -80,7 +80,7 @@ public class PeerSession {
                 tempPieceId = choosePiece(tempPieceId);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Исключение в главном цикле", e);
         } finally {
             closeSocket();
         }
@@ -148,7 +148,7 @@ public class PeerSession {
 
     private byte[] getMsg() {
         try {
-            Thread.sleep(200);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
