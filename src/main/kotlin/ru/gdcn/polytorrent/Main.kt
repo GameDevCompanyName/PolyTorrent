@@ -20,7 +20,7 @@ fun main() {
     println(metafile.info.pieceHashes.size)
     SessionInfo.infoHash = metafile.infoHash
     SessionInfo.ourPeerId = peerId.toTypedArray()
-    SessionInfo.NUM_OF_BLOCKS = metafile.blockQuantity
+    SessionInfo.NUM_OF_BLOCKS = metafile.blockQuantity.toInt()
     SessionInfo.totalPieces = metafile.info.pieceHashes.size
 
     val trackerManager = TrackerManager(metafile, peerId)
